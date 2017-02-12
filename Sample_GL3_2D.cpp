@@ -72,6 +72,8 @@ typedef struct Base {
 }Base;
 
 struct Base tiles[10][10];
+struct Base Blockobj;
+
 
 std::map <string, Base> floorbj; //Only have the floor objects here
 
@@ -267,6 +269,12 @@ bool rectangle_rot_status = true;
         tiles[i][j].translate_matrix = glm::translate(glm::vec3(x, y, z));
   }
 
+  void blocktranslate (float x, float y,float  z)
+  {
+    Blockobj.translate_matrix = glm::translate(glm::vec3(x, y, z));
+
+  }
+
 
   void rendertiles(int i, int  j)
   {
@@ -277,7 +285,33 @@ bool rectangle_rot_status = true;
       MVP = VP * Matrices.model;
       glUniformMatrix4fv(Matrices.MatrixID, 1, GL_FALSE, &MVP[0][0]);
       draw3DObject(tiles[i][j].object);
+      return;
   }
+
+    void blockrotator(float rotation=0, glm::vec3 rotating_vector=glm::vec3(0,0,1))
+  {
+      Blockobj.rotate_matrix = glm::rotate((float)(rotation*M_PI/180.0f), rotating_vector);
+  }
+
+  void renderblock()
+  {
+
+      if(Blockobj.y > 0)
+    {
+         Blockobj.y -= 0.1f; 
+         blocktranslate (Blockobj.x, Blockobj.y, Blockobj.z);
+    }
+       glm::mat4 MVP;
+      Matrices.model =glm::mat4(1.0f);
+      glm::mat4 VP = Matrices.projectionO * Matrices.view;
+      Matrices.model = Blockobj.translate_matrix*Blockobj.rotate_matrix;
+      MVP = VP * Matrices.model;
+      glUniformMatrix4fv(Matrices.MatrixID, 1, GL_FALSE, &MVP[0][0]);
+      draw3DObject(Blockobj.object);
+
+  }
+
+
   int board[10][10] = {
         {1,1,1,0,0,0,0,1,1,1},
         {1,1,1,1,1,1,0,0,0,0},
@@ -414,7 +448,7 @@ void reshapeWindow (GLFWwindow* window, int width, int height)
    Matrices.projectionO = glm::ortho(-4.0f, 4.0f, -4.0f, 4.0f, 0.1f, 500.0f);
 }
 
-VAO *triangle, *rectangle, *box;
+VAO *triangle, *rectangle, *box, *block;
 
 // Creates the triangle object used in this sample code
 void createTriangle ()
@@ -484,6 +518,52 @@ void createBox(float l, float b, float h, float r, float g, float bl, float x, f
 //	tempobj.weight=weight;
 
     tiles[i][j]=tempobj;
+}
+
+void createBlock(float l, float b, float h, float r, float g, float bl, float x, float y , float z)
+{
+    GLfloat vertex_buffer_data[ ] = {
+        0, 0, 0, b, 0, 0, b, h, 0, b, h, 0, 0, h, 0, 0, 0 , 0,        //1
+        0, 0, 0, 0, h, 0, 0, h, l, 0, h, l, 0, 0, l, 0, 0, 0,    //2
+        0, 0, 0, 0, 0, l, b, 0, l, b, 0, l, b, 0, 0, 0, 0, 0,        //3 
+
+        0, 0, l, b, 0, l, b, h, l, b, h, l, 0, h, l, 0, 0, l,        //4
+        b, 0, l, b, 0, 0, b, h, 0, b, h, 0, b, h, l, b, 0, l,            //5
+        0, h, l, b, h, l, b, h, 0, b, h, 0, 0, h, 0, 0, h, l         //6
+    };
+    GLfloat color_buffer_data [ ] = {
+    r, g, bl, r, g, bl, r, g, bl, r, g, bl, r, g, bl, r, g, bl,
+        r, g, bl, r, g, bl, r, g, bl, r, g, bl, r, g, bl, r, g, bl,
+        r, g, bl, r, g, bl, r, g, bl, r, g, bl, r, g, bl, r, g, bl,
+        
+        r, g, bl, r, g, bl, r, g, bl, r, g, bl, r, g, bl, r, g, bl,
+        r, g, bl, r, g, bl, r, g, bl, r, g, bl, r, g, bl, r, g, bl,
+        r, g, bl, r, g, bl, r, g, bl, r, g, bl, r, g, bl, r, g, bl
+    };
+    block = create3DObject(GL_TRIANGLES, 36, vertex_buffer_data, color_buffer_data, GL_FILL);
+
+    //Create the Base temporary object here corresponding to the name and this gets sorted
+
+	Base tempobj = {};
+	tempobj.rgb_color = {r,g,bl};
+	tempobj.object = block;
+	tempobj.x=x;
+	tempobj.y=y;
+    tempobj.z=z;
+	tempobj.height=h;
+	tempobj.width=b;
+	tempobj.status=1;
+	tempobj.inAir=0;
+	tempobj.angle=0;
+	tempobj.x_speed=0;
+	tempobj.y_speed=0;
+	tempobj.fixed=0;
+	tempobj.radius=(sqrt(h*h + b*b))/2;
+	tempobj.friction=0.4;
+	tempobj.health=100;
+//	tempobj.weight=weight;
+
+    Blockobj=tempobj;
     
 
 }
@@ -530,6 +610,7 @@ void drawtiles ( )
                     rendertiles(i,j);
         }
     }
+    return;
 }
 
 /* Render the scene with openGL */
@@ -607,9 +688,12 @@ void draw (GLFWwindow* window, float x, float y, float w, float h)
     Matrices.model *= (translatebox * rotatebox);
     MVP = VP * Matrices.model;
     glUniformMatrix4fv(Matrices.MatrixID, 1, GL_FALSE, &MVP[0][0]);   */ 
+   
     
     drawtiles();
-
+    renderblock();
+    
+      
     // Increment angles
     float increments = 1;
 
@@ -683,6 +767,10 @@ void initGL (GLFWwindow* window, int width, int height)
         }
         z_ordinate += 0.3f;
     }
+    x_ordinate = 0.0f;
+    y_ordinate = rand( )%2 + 1.0f ;
+    z_ordinate = 0.0f;
+    createBlock(0.3f, 0.3f, 0.6f, 1, 0,1,x_ordinate, y_ordinate, z_ordinate);
 
     // Create and compile our GLSL program from the shaders
     programID = LoadShaders( "Sample_GL.vert", "Sample_GL.frag" );
