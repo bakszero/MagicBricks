@@ -836,7 +836,7 @@ void draw (GLFWwindow* window, float x, float y, float w, float h)
 
     if(view=="top")
     {
-         glm::vec3 eye ( 1.51,1.51,1.51);
+         glm::vec3 eye ( 1.51,2.51,1.51);
 
     // Target - Where is the camera looking at.  Don't change unless you are sure!!
     glm::vec3 target (1.5,0,1.5);
