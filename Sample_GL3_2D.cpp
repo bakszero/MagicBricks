@@ -51,7 +51,7 @@ typedef struct Base {
 	GLfloat x,y,z;
 	VAO* object;
 	GLint status;
-	GLfloat height,width;
+	GLfloat height,width, length;
 	GLfloat x_speed,y_speed;
 	GLfloat angle; //Current Angle (Actual rotated angle of the object)
 	GLint inAir;
@@ -73,9 +73,6 @@ typedef struct Base {
 
 struct Base tiles[10][10];
 struct Base Blockobj;
-
-
-std::map <string, Base> floorbj; //Only have the floor objects here
 
 
 /* Function to load Shaders - Use it as it is */
@@ -236,7 +233,7 @@ void draw3DObject (struct VAO* vao)
 {
     // Change the Fill Mode for this object
     glPolygonMode (GL_FRONT_AND_BACK, vao->FillMode);
-
+    
     // Bind the VAO to use
     glBindVertexArray (vao->VertexArrayID);
 
@@ -249,9 +246,14 @@ void draw3DObject (struct VAO* vao)
     glEnableVertexAttribArray(1);
     // Bind the VBO to use
     glBindBuffer(GL_ARRAY_BUFFER, vao->ColorBuffer);
+    //glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
 
     // Draw the geometry !
     glDrawArrays(vao->PrimitiveMode, 0, vao->NumVertices); // Starting from vertex 0; 3 vertices total -> 1 triangle
+   // glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
+    
+
+
 }
 
 /**************************
@@ -296,11 +298,9 @@ bool rectangle_rot_status = true;
   void renderblock()
   {
 
-      if(Blockobj.y > 0)
-    {
-         Blockobj.y -= 0.1f; 
+      
          blocktranslate (Blockobj.x, Blockobj.y, Blockobj.z);
-    }
+    
        glm::mat4 MVP;
       Matrices.model =glm::mat4(1.0f);
       glm::mat4 VP = Matrices.projectionO * Matrices.view;
@@ -348,6 +348,12 @@ void keyboard (GLFWwindow* window, int key, int scancode, int action, int mods)
     }
     else if (action == GLFW_PRESS) {
         switch (key) {
+    case GLFW_KEY_LEFT:
+                Blockobj.z += Blockobj.length;
+                blocktranslate(Blockobj.x, 0, Blockobj.z + Blockobj.height);
+                blockrotator(-90.0f, glm::vec3(1, 0, 0));
+                break;
+                
 	case GLFW_KEY_ESCAPE:
 	    quit(window);
 	    break;
@@ -552,6 +558,7 @@ void createBlock(float l, float b, float h, float r, float g, float bl, float x,
     tempobj.z=z;
 	tempobj.height=h;
 	tempobj.width=b;
+    tempobj.length=0.3f;
 	tempobj.status=1;
 	tempobj.inAir=0;
 	tempobj.angle=0;
@@ -631,7 +638,7 @@ void draw (GLFWwindow* window, float x, float y, float w, float h)
        // glm::vec3 eye ( 3,3.5,5 );
 
     // Target - Where is the camera looking at.  Don't change unless you are sure!!
-    glm::vec3 target (0, 0, 0);
+    glm::vec3 target (0, 1, 0);
     // Up - Up vector defines tilt of camera.  Don't change unless you are sure!!
     glm::vec3 up (0, 1, 0);
 
@@ -768,9 +775,9 @@ void initGL (GLFWwindow* window, int width, int height)
         z_ordinate += 0.3f;
     }
     x_ordinate = 0.0f;
-    y_ordinate = rand( )%2 + 1.0f ;
+    y_ordinate = 1.0f ;
     z_ordinate = 0.0f;
-    createBlock(0.3f, 0.3f, 0.6f, 1, 0,1,x_ordinate, y_ordinate, z_ordinate);
+    createBlock(0.3f, 0.3f, 0.6f, 1, 1,1,x_ordinate, y_ordinate, z_ordinate);
 
     // Create and compile our GLSL program from the shaders
     programID = LoadShaders( "Sample_GL.vert", "Sample_GL.frag" );
