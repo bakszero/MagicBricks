@@ -919,6 +919,15 @@ void draw (GLFWwindow* window, float x, float y, float w, float h)
    
     
     drawtiles();
+
+    if(Blockobj.x <0 ||  Blockobj.z < 0 || Blockobj.x >=3 || Blockobj.z >= 3)
+    {       
+                
+                Blockobj.y -=0.1f;
+                
+          
+
+    }
     renderblock();
     
       
