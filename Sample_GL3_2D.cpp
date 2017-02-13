@@ -74,6 +74,8 @@ typedef struct Base {
 struct Base tiles[10][10];
 struct Base Blockobj;
 
+std::string bstatus = "up";
+
 
 /* Function to load Shaders - Use it as it is */
 GLuint LoadShaders(const char * vertex_file_path,const char * fragment_file_path) {
@@ -290,7 +292,7 @@ bool rectangle_rot_status = true;
       return;
   }
 
-    void blockrotator(float rotation=0, glm::vec3 rotating_vector=glm::vec3(0,0,1))
+    void blockrotator(float rotation, glm::vec3 rotating_vector=glm::vec3(0,0,1))
   {
       Blockobj.rotate_matrix = glm::rotate((float)(rotation*M_PI/180.0f), rotating_vector);
   }
@@ -299,9 +301,10 @@ bool rectangle_rot_status = true;
   {
 
       
-         blocktranslate (Blockobj.x, Blockobj.y, Blockobj.z);
+      blocktranslate (Blockobj.x, Blockobj.y, Blockobj.z);
     
-       glm::mat4 MVP;
+
+      glm::mat4 MVP;
       Matrices.model =glm::mat4(1.0f);
       glm::mat4 VP = Matrices.projectionO * Matrices.view;
       Matrices.model = Blockobj.translate_matrix*Blockobj.rotate_matrix;
@@ -349,10 +352,167 @@ void keyboard (GLFWwindow* window, int key, int scancode, int action, int mods)
     else if (action == GLFW_PRESS) {
         switch (key) {
     case GLFW_KEY_LEFT:
-                Blockobj.z += Blockobj.length;
-                blocktranslate(Blockobj.x, 0, Blockobj.z + Blockobj.height);
-                blockrotator(-90.0f, glm::vec3(1, 0, 0));
+                if(bstatus == "up")
+                {
+                    Blockobj.z += Blockobj.length;
+                    Blockobj.y =1.3f;
+                   /* */
+                   
+                    blockrotator(90.0f, glm::vec3(1, 0, 0));
+                    renderblock();
+                    cout << "X is "<< Blockobj.x<< endl;
+                    cout << "Y is "<< Blockobj.y<< endl;
+                    cout <<"Z is "<< Blockobj.z << endl;
+                   
+                    bstatus="horizdown";
+                }
+               else if (bstatus=="horizdown")
+               {
+                   Blockobj.z += 2*Blockobj.length;
+                  Blockobj.y = 1.0f;
+                   
+                    blockrotator ( 0.0f, glm::vec3 ( 1,0,0 ) );
+
+                    renderblock();
+                     
+                    bstatus="up";
+                    cout << "X is "<< Blockobj.x<< endl;
+                    cout << "Y is "<< Blockobj.y<< endl;
+                    cout <<"Z is "<< Blockobj.z << endl;
+                }
+          
+          else if (bstatus=="lateraldown")
+            {
+                Blockobj.z += Blockobj.width;
+                  Blockobj.y = 1.3f;
+                   
+                    //blockrotator ( 0.0f, glm::vec3 ( 0,0,-1 ) );
+
+                    renderblock();
+                    cout << "X is "<< Blockobj.x<< endl;
+                    cout << "Y is "<< Blockobj.y<< endl;
+                    cout <<"Z is "<< Blockobj.z << endl;
+             }
                 break;
+
+     case GLFW_KEY_RIGHT:
+            if(bstatus=="up")
+            {
+                Blockobj.z -= 2*Blockobj.length;
+                Blockobj.y =1.3f;
+                blockrotator(90.0f, glm::vec3(1, 0, 0));
+                renderblock();
+                cout << "X is "<< Blockobj.x<< endl;
+                    cout << "Y is "<< Blockobj.y<< endl;
+                    cout <<"Z is "<< Blockobj.z << endl;
+                bstatus="horizdown";
+                   
+                
+            }
+            else if (bstatus=="horizdown")
+               {
+                  Blockobj.z -= Blockobj.length;
+                  Blockobj.y = 1.0f;
+                   
+                    blockrotator ( 0.0f, glm::vec3 ( 1,0,0 ) );
+
+                    renderblock();
+                     cout << "X is "<< Blockobj.x<< endl;
+                    cout << "Y is "<< Blockobj.y<< endl;
+                    cout <<"Z is "<< Blockobj.z << endl;
+                    bstatus="up";
+                    
+                }
+            else if (bstatus=="lateraldown")
+            {
+                Blockobj.z -= Blockobj.width;
+                  Blockobj.y = 1.3f;
+                   
+                    //blockrotator ( 0.0f, glm::vec3 ( 0,0,-1 ) );
+
+                    renderblock();
+                    cout << "X is "<< Blockobj.x<< endl;
+                    cout << "Y is "<< Blockobj.y<< endl;
+                    cout <<"Z is "<< Blockobj.z << endl;
+             }
+             break;
+
+        case GLFW_KEY_UP:
+            if(bstatus=="up")
+            {
+                Blockobj.x -= Blockobj.width;
+                Blockobj.y =1.3f;
+                blockrotator(90.0f, glm::vec3(0, 0, -1));
+                renderblock();
+                     
+                    bstatus="lateraldown";
+                    cout << "X is "<< Blockobj.x<< endl;
+                    cout << "Y is "<< Blockobj.y<< endl;
+                    cout <<"Z is "<< Blockobj.z << endl;
+            }              
+            else if (bstatus=="lateraldown")
+            {
+                Blockobj.x -= Blockobj.width;
+                  Blockobj.y = 1.0f;
+                   
+                    blockrotator ( 0.0f, glm::vec3 ( 0,0,-1 ) );
+
+                    renderblock();
+                    bstatus="up";
+                    cout << "X is "<< Blockobj.x<< endl;
+                    cout << "Y is "<< Blockobj.y<< endl;
+                    cout <<"Z is "<< Blockobj.z << endl;
+            }
+             else if(bstatus=="horizdown")
+            {
+                  Blockobj.x -= Blockobj.width;
+                  Blockobj.y = 1.3f;
+                   // blockrotator ( 0.0f, glm::vec3 ( 1,0,0 ) );
+                  renderblock();
+                  cout << "X is "<< Blockobj.x<< endl;
+                    cout << "Y is "<< Blockobj.y<< endl;
+                    cout <<"Z is "<< Blockobj.z << endl;
+                     
+            }
+            break;
+
+        case GLFW_KEY_DOWN:
+            if(bstatus=="up")
+            {
+                Blockobj.x += Blockobj.width;
+                Blockobj.y =1.3f;
+                blockrotator(-90.0f, glm::vec3(0, 0, 1));
+                renderblock();
+                     
+                    bstatus="lateraldown";
+                      cout << "X is "<< Blockobj.x<< endl;
+                    cout << "Y is "<< Blockobj.y<< endl;
+                    cout <<"Z is "<< Blockobj.z << endl;
+            }              
+            else if (bstatus=="lateraldown")
+            {
+                Blockobj.x += 2*Blockobj.width;
+                  Blockobj.y = 1.0f;
+                   
+                    blockrotator ( 0.0f, glm::vec3 ( 0,0,1 ) );
+                    renderblock();
+                    bstatus="up";
+                      cout << "X is "<< Blockobj.x<< endl;
+                    cout << "Y is "<< Blockobj.y<< endl;
+                    cout <<"Z is "<< Blockobj.z << endl;
+            }
+            else if(bstatus=="horizdown")
+            {
+                  Blockobj.x += Blockobj.width;
+                  Blockobj.y = 1.3f;
+                   // blockrotator ( 0.0f, glm::vec3 ( 1,0,0 ) );
+                  renderblock();
+                  cout << "X is "<< Blockobj.x<< endl;
+                    cout << "Y is "<< Blockobj.y<< endl;
+                    cout <<"Z is "<< Blockobj.z << endl;
+                     
+            }
+            break;
                 
 	case GLFW_KEY_ESCAPE:
 	    quit(window);
@@ -441,7 +601,7 @@ void reshapeWindow (GLFWwindow* window, int width, int height)
     int fbwidth=width, fbheight=height;
     glfwGetFramebufferSize(window, &fbwidth, &fbheight);
 
-    GLfloat fov = M_PI/2;
+    GLfloat fov = M_PI/1.8;
 
     // sets the viewport of openGL renderer
     glViewport (0, 0, (GLsizei) fbwidth, (GLsizei) fbheight);
@@ -635,10 +795,10 @@ void draw (GLFWwindow* window, float x, float y, float w, float h)
 
     // Eye - Location of camera. Don't change unless you are sure!!
     glm::vec3 eye ( 3*cos(camera_rotation_angle*M_PI/180.0f), 3, 3*sin(camera_rotation_angle*M_PI/180.0f) );
-       // glm::vec3 eye ( 3,3.5,5 );
+     //glm::vec3 eye ( 1.5,1.5,1.5);
 
     // Target - Where is the camera looking at.  Don't change unless you are sure!!
-    glm::vec3 target (0, 1, 0);
+    glm::vec3 target (0,1,0);
     // Up - Up vector defines tilt of camera.  Don't change unless you are sure!!
     glm::vec3 up (0, 1, 0);
 
@@ -777,7 +937,7 @@ void initGL (GLFWwindow* window, int width, int height)
     x_ordinate = 0.0f;
     y_ordinate = 1.0f ;
     z_ordinate = 0.0f;
-    createBlock(0.3f, 0.3f, 0.6f, 1, 1,1,x_ordinate, y_ordinate, z_ordinate);
+    createBlock(0.3f, 0.3f, 0.6f, 1, 0,1,x_ordinate, y_ordinate, z_ordinate);
 
     // Create and compile our GLSL program from the shaders
     programID = LoadShaders( "Sample_GL.vert", "Sample_GL.frag" );
