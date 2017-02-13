@@ -25,6 +25,8 @@ struct VAO {
     int NumVertices;
 };
 typedef struct VAO VAO;
+//Define the type of view
+std::string view="default";
 
 struct GLMatrices {
     glm::mat4 projectionO, projectionP;
@@ -268,6 +270,7 @@ bool triangle_rot_status = true;
 bool rectangle_rot_status = true;
 
 
+
  void translatetiles(float x, float y , float z, int i, int j)
   {
         tiles[i][j].translate_matrix = glm::translate(glm::vec3(x, y, z));
@@ -328,6 +331,18 @@ bool rectangle_rot_status = true;
         {0,0,1,0,1,0,0,1,0,1}
     };
 
+void drawtiles ( )
+{
+    for(int i = 0; i < 10; i++ ){
+        for(int j = 0; j < 10; j++ ){            
+                translatetiles (tiles[i][j].x, tiles[i][j].y, tiles[i][j].z, i, j);   
+                if(board[i][j]==1)
+                    rendertiles(i,j);
+        }
+    }
+    return;
+}
+
 /* Executed when a regular key is pressed/released/held-down */
 /* Prefered for Keyboard events */
 void keyboard (GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -351,6 +366,25 @@ void keyboard (GLFWwindow* window, int key, int scancode, int action, int mods)
     }
     else if (action == GLFW_PRESS) {
         switch (key) {
+
+    case GLFW_KEY_T:
+
+                view="top";                        
+                
+
+    break;
+
+    case GLFW_KEY_D:
+                view ="default";
+                break;
+
+    case GLFW_KEY_B:
+                view="block";
+                break;
+
+    case GLFW_KEY_F:
+                view="followcam";
+                break;
     case GLFW_KEY_LEFT:
                 if(bstatus == "up")
                 {
@@ -601,17 +635,17 @@ void reshapeWindow (GLFWwindow* window, int width, int height)
     int fbwidth=width, fbheight=height;
     glfwGetFramebufferSize(window, &fbwidth, &fbheight);
 
-    GLfloat fov = M_PI/1.8;
+    GLfloat fov = M_PI/1.0f;
 
     // sets the viewport of openGL renderer
     glViewport (0, 0, (GLsizei) fbwidth, (GLsizei) fbheight);
 
     // Store the projection matrix in a variable for future use
     // Perspective projection for 3D views
-    Matrices.projectionP = glm::perspective(fov, (GLfloat) fbwidth / (GLfloat) fbheight, 0.1f, 500.0f);
+    Matrices.projectionP = glm::perspective(fov, (GLfloat) fbwidth / (GLfloat) fbheight, 0.1f, 900.0f);
 
     // Ortho projection for 2D views
-   Matrices.projectionO = glm::ortho(-4.0f, 4.0f, -4.0f, 4.0f, 0.1f, 500.0f);
+   Matrices.projectionO = glm::ortho(-4.0f, 4.0f, -4.0f, 4.0f, 0.01f, 500.0f);
 }
 
 VAO *triangle, *rectangle, *box, *block;
@@ -768,17 +802,7 @@ float rectangle_rotation = 0;
 float triangle_rotation = 0;
 
 
-void drawtiles ( )
-{
-    for(int i = 0; i < 10; i++ ){
-        for(int j = 0; j < 10; j++ ){            
-                translatetiles (tiles[i][j].x, tiles[i][j].y, tiles[i][j].z, i, j);   
-                if(board[i][j]==1)
-                    rendertiles(i,j);
-        }
-    }
-    return;
-}
+
 
 /* Render the scene with openGL */
 /* Edit this function according to your assignment */
@@ -793,6 +817,8 @@ void draw (GLFWwindow* window, float x, float y, float w, float h)
     // Don't change unless you know what you are doing
     glUseProgram(programID);
 
+    if(view=="default")
+    { 
     // Eye - Location of camera. Don't change unless you are sure!!
     glm::vec3 eye ( 3*cos(camera_rotation_angle*M_PI/180.0f), 3, 3*sin(camera_rotation_angle*M_PI/180.0f) );
      //glm::vec3 eye ( 1.5,1.5,1.5);
@@ -806,7 +832,42 @@ void draw (GLFWwindow* window, float x, float y, float w, float h)
     // Matrices.view = glm::lookAt( eye, target, up ); // Rotating Camera for 3D
     //  Don't change unless you are sure!!
     Matrices.view = glm::lookAt(eye, target, up); // Fixed camera for 2D (ortho) in XY plane
+    }
 
+    if(view=="top")
+    {
+         glm::vec3 eye ( 1.51,1.51,1.51);
+
+    // Target - Where is the camera looking at.  Don't change unless you are sure!!
+    glm::vec3 target (1.5,0,1.5);
+    // Up - Up vector defines tilt of camera.  Don't change unless you are sure!!
+    glm::vec3 up (0,1,0);
+     Matrices.view = glm::lookAt(eye, target, up); // Fixed camera for 2D (ortho) in XY plane
+    }
+
+    if(view=="block")
+    {
+        glm::vec3 eye ( Blockobj.x,Blockobj.y,Blockobj.z);
+
+    // Target - Where is the camera looking at.  Don't change unless you are sure!!
+    glm::vec3 target (-1.5,1,-1.5);
+    // Up - Up vector defines tilt of camera.  Don't change unless you are sure!!
+    glm::vec3 up (0, 1, 0);
+     Matrices.view = glm::lookAt(eye, target, up); // Fixed camera for 2D (ortho) in XY plane
+
+    }
+
+    if(view=="followcam")
+    {
+         glm::vec3 eye ( Blockobj.x-0.3f,Blockobj.y+1.0f,Blockobj.z);
+
+    // Target - Where is the camera looking at.  Don't change unless you are sure!!
+    glm::vec3 target (-1.5,1,-1.5);
+    // Up - Up vector defines tilt of camera.  Don't change unless you are sure!!
+    glm::vec3 up (0, 1, 0);
+     Matrices.view = glm::lookAt(eye, target, up); // Fixed camera for 2D (ortho) in XY plane
+
+    }
     // Compute ViewProject matrix as view/camera might not be changed for this frame (basic scenario)
     //  Don't change unless you are sure!!
     //glm::mat4 VP = (proj_type?Matrices.projectionP:Matrices.projectionO) * Matrices.view;
