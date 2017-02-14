@@ -27,6 +27,7 @@ struct VAO {
 typedef struct VAO VAO;
 //Define the type of view
 std::string view="default";
+GLint flag=1;
 
 struct GLMatrices {
     glm::mat4 projectionO, projectionP;
@@ -286,7 +287,7 @@ bool rectangle_rot_status = true;
 
   void rendertiles(int i, int  j)
   {
-      glm::mat4 VP = Matrices.projectionO * Matrices.view;
+      glm::mat4 VP = Matrices.projectionP * Matrices.view;
       glm::mat4 MVP;
       Matrices.model = glm::mat4(1.0f);
       Matrices.model = tiles[i][j].translate_matrix;
@@ -310,7 +311,7 @@ bool rectangle_rot_status = true;
 
       glm::mat4 MVP;
       Matrices.model =glm::mat4(1.0f);
-      glm::mat4 VP = Matrices.projectionO * Matrices.view;
+      glm::mat4 VP = Matrices.projectionP * Matrices.view;
       Matrices.model = Blockobj.translate_matrix*Blockobj.rotate_matrix;
       MVP = VP * Matrices.model;
       glUniformMatrix4fv(Matrices.MatrixID, 1, GL_FALSE, &MVP[0][0]);
@@ -338,6 +339,16 @@ bool rectangle_rot_status = true;
 
    };
 
+ 
+   int level3[6][15] = {
+        {0,0,0,0,0,0,1,1,1,1,0,0,1,1,1},
+        {1,1,1,1,0,0,1,1,1,1,0,0,1,0,1},
+        {1,1,1,1,0,0,1,1,1,1,0,0,1,1,1},
+        {1,1,1,1,0,0,1,1,1,1,0,0,1,1,1},
+        {1,1,1,1,0,0,1,1,1,1,0,0,1,1,1},
+        {1,1,1,1,0,0,1,1,1,1,0,0,0,0,0},
+
+   };
 void drawtiles ( int a, int b , string s )
 {
     if(s=="level1")
@@ -357,6 +368,16 @@ void drawtiles ( int a, int b , string s )
         for(int j = 0; j < b  ; j++ ){            
                 translatetiles (tiles[i][j].x, tiles[i][j].y, tiles[i][j].z, i, j);   
                 if(level2[i][j]==1)
+                    rendertiles(i,j);
+        }
+    }
+    }
+    if(s=="level3")
+    {
+        for(int i = 0; i < a  ; i++ ){
+        for(int j = 0; j < b  ; j++ ){            
+                translatetiles (tiles[i][j].x, tiles[i][j].y, tiles[i][j].z, i, j);   
+                if(level3[i][j]==1)
                     rendertiles(i,j);
         }
     }
@@ -534,11 +555,11 @@ void keyboard (GLFWwindow* window, int key, int scancode, int action, int mods)
                     cout <<"Z is "<< Blockobj.z << endl;
 
             }
-             else if(bstatus=="horizdown")
+             else if(bstatus=="horizdown") 
             {
                   Blockobj.x -= Blockobj.width;
                   Blockobj.y = 1.3f;
-                  bstatus="up";
+                  bstatus="horizdown";
                    // blockrotator ( 0.0f, glm::vec3 ( 1,0,0 ) );
                   renderblock();
                   cout << "X is "<< Blockobj.x<< endl;
@@ -673,17 +694,17 @@ void reshapeWindow (GLFWwindow* window, int width, int height)
     int fbwidth=width, fbheight=height;
     glfwGetFramebufferSize(window, &fbwidth, &fbheight);
 
-    GLfloat fov = M_PI/1.0f;
+    GLfloat fov = M_PI/2.0f;
 
     // sets the viewport of openGL renderer
     glViewport (0, 0, (GLsizei) fbwidth, (GLsizei) fbheight);
 
     // Store the projection matrix in a variable for future use
     // Perspective projection for 3D views
-    Matrices.projectionP = glm::perspective(glm::radians(45.0f), (GLfloat) fbwidth / (GLfloat) fbheight, 0.1f, 9000.0f);
+    Matrices.projectionP = glm::perspective(fov, (GLfloat) fbwidth / (GLfloat) fbheight, 0.1f, 5000.0f);
 
     // Ortho projection for 2D views
-   Matrices.projectionO = glm::ortho(-3.4f, 3.4f, -3.4f, 3.4f, 0.1f, 5000.0f);
+   //Matrices.projectionO = glm::ortho(-3.4f, 3.4f, -3.4f, 3.4f, 0.1f, 5000.0f);
 }
 
 VAO *triangle, *rectangle, *box, *block;
@@ -877,7 +898,7 @@ void draw (GLFWwindow* window, float x, float y, float w, float h)
 {
     int fbwidth, fbheight;
     glfwGetFramebufferSize(window, &fbwidth, &fbheight);
-    glViewport((int)(x*fbwidth), (int)(y*fbheight), (int)(w*fbwidth), (int)(h*fbheight));
+    glViewport(0, 0, (int)(w*fbwidth), (int)(h*fbheight));
 
 
     // use the loaded shader program
@@ -888,7 +909,7 @@ void draw (GLFWwindow* window, float x, float y, float w, float h)
     { 
     // Eye - Location of camera. Don't change unless you are sure!!
    // glm::vec3 eye ( 3*cos(camera_rotation_angle*M_PI/180.0f), 3, 3*sin(camera_rotation_angle*M_PI/180.0f) );
-     glm::vec3 eye ( 3,4,3);
+     glm::vec3 eye ( 4,4,4);
 
     // Target - Where is the camera looking at.  Don't change unless you are sure!!
     glm::vec3 target (0,0,0);
@@ -903,21 +924,51 @@ void draw (GLFWwindow* window, float x, float y, float w, float h)
 
     if(view=="top")
     {
-         glm::vec3 eye ( 1.51,1.51,0);
+         
+         
+         if(level=="level1")
+         {
+             glm::vec3 eye ( 0,5,0);
 
     // Target - Where is the camera looking at.  Don't change unless you are sure!!
-    glm::vec3 target (1.5,0,0);
+    glm::vec3 target (0,0,0);
     // Up - Up vector defines tilt of camera.  Don't change unless you are sure!!
-    glm::vec3 up (0,1,0);
-     Matrices.view = glm::lookAt(eye, target, up); // Fixed camera for 2D (ortho) in XY plane
+    glm::vec3 up (-1,0,0);
+         Matrices.view = glm::lookAt(eye, target, up); // Fixed camera for 2D (ortho) in XY plane
+
+         }
+
+
+         else if(level=="level2")
+         {
+             glm::vec3 eye ( 0,10,0);
+
+    // Target - Where is the camera looking at.  Don't change unless you are sure!!
+             glm::vec3 target (0,0,0);
+    // Up - Up vector defines tilt of camera.  Don't change unless you are sure!!
+             glm::vec3 up (-1,0,0);
+         Matrices.view = glm::lookAt(eye, target, up); // Fixed camera for 2D (ortho) in XY plane
+
+         }
+         else if(level=="level3")
+         {
+             glm::vec3 eye ( 0,10,0);
+
+    // Target - Where is the camera looking at.  Don't change unless you are sure!!
+             glm::vec3 target (0,0,0);
+    // Up - Up vector defines tilt of camera.  Don't change unless you are sure!!
+             glm::vec3 up (-1,0,0);
+         Matrices.view = glm::lookAt(eye, target, up); // Fixed camera for 2D (ortho) in XY plane
+
+         }
     }
 
     if(view=="block")
     {
-        glm::vec3 eye ( Blockobj.x,Blockobj.y,Blockobj.z);
+        glm::vec3 eye ( Blockobj.x+0.8f,1.6f ,Blockobj.z);
 
     // Target - Where is the camera looking at.  Don't change unless you are sure!!
-    glm::vec3 target (-1.5,1,-1.5);
+    glm::vec3 target (Blockobj.x+5.0f, 1.0f, Blockobj.z+3.0);
     // Up - Up vector defines tilt of camera.  Don't change unless you are sure!!
     glm::vec3 up (0, 1, 0);
      Matrices.view = glm::lookAt(eye, target, up); // Fixed camera for 2D (ortho) in XY plane
@@ -938,7 +989,7 @@ void draw (GLFWwindow* window, float x, float y, float w, float h)
     // Compute ViewProject matrix as view/camera might not be changed for this frame (basic scenario)
     //  Don't change unless you are sure!!
     //glm::mat4 VP = (proj_type?Matrices.projectionP:Matrices.projectionO) * Matrices.view;
-    glm::mat4 VP = Matrices.projectionO * Matrices.view;
+    glm::mat4 VP = Matrices.projectionP * Matrices.view;
 
     // Send our transformation to the currently bound shader, in the "MVP" uniform
     // For each model you render, since the MVP will be different (at least the M part)
@@ -994,11 +1045,16 @@ void draw (GLFWwindow* window, float x, float y, float w, float h)
        }
                         
     
-   LABEL: if(level=="level2")
+    if(level=="level2")
        {
 
         drawtiles(6,15, "level2");
        }
+
+    if(level=="level3")
+    {
+        drawtiles(6,15,"level3");
+    }
 
     
     renderblock();
@@ -1157,14 +1213,23 @@ int main (int argc, char** argv)
 
         // OpenGL Draw commands
 	draw(window, 0, 0, 1, 1);
-    if(fabs(Blockobj.x-2.1)<0.1 && fabs(Blockobj.y-1)<0.1  && fabs(Blockobj.z-1.2)<0.1 &&bstatus=="up" )
+    if(level=="level1" && fabs(Blockobj.x-2.1)<0.1 && fabs(Blockobj.y-1)<0.1  && fabs(Blockobj.z-1.2)<0.1 &&bstatus=="up" )
             {
                 Blockobj.x =0.3f;
                 Blockobj.y=1.0f;
                 Blockobj.z=0.3f;
                 level="level2";
+                flag=2;
                
             }
+    if(flag=2 && fabs(Blockobj.x-3.9)<0.1 && fabs(Blockobj.y-1)<0.1  && fabs(Blockobj.z-0.9)<0.1 &&bstatus=="up" )
+    {
+        Blockobj.x = 0.3f;
+        Blockobj.y=1.0f;
+        Blockobj.z=1.2f;
+        level="level3";
+        flag=3;
+    }
 	// proj_type ^= 1;
 	// draw(window, 0.5, 0, 0.5, 1);
 	// proj_type ^= 1;
