@@ -73,10 +73,11 @@ typedef struct Base {
     glm::mat4 rotate_matrix;
 }Base;
 
-struct Base tiles[10][10];
+struct Base tiles[100][100];
 struct Base Blockobj;
 
 std::string bstatus = "up";
+std::string level="level1";
 
 
 /* Function to load Shaders - Use it as it is */
@@ -318,27 +319,47 @@ bool rectangle_rot_status = true;
   }
 
 
-  int board[10][10] = {
-        {1,1,1,0,0,0,0,1,1,1},
-        {1,1,1,1,1,1,0,0,0,0},
+  int level1[6][10] = {
+        {1,1,1,0,0,0,0,0,0,0},
+        {1,1,1,1,1,0,0,0,0,0},
         {1,1,1,1,1,1,1,1,1,0},
         {0,1,1,1,1,1,1,1,1,1},
         {0,0,0,0,0,1,1,0,1,1},
-        {0,1,0,0,1,0,1,1,1,0},
-        {0,0,0,1,0,0,1,0,1,0},
-        {0,0,1,0,1,0,0,0,0,0},
-        {0,0,0,0,1,0,1,1,1,0},
-        {0,0,1,0,1,0,0,1,0,1}
-    };
+        {0,0,0,0,0,0,1,1,1,0}
+           };
 
-void drawtiles ( )
+   int level2[6][15] = {
+        {0,0,0,0,0,0,1,1,1,1,1,1,1,0,0},
+        {1,1,1,1,0,0,1,1,1,0,0,1,1,0,0},
+        {1,1,1,1,1,1,1,1,1,0,0,1,1,1,1},
+        {1,1,1,1,0,0,0,0,0,0,0,1,1,0,1},
+        {1,1,1,1,0,0,0,0,0,0,0,1,1,1,1},
+        {1,1,1,1,0,0,0,0,0,0,0,0,1,1,1}
+
+   };
+
+void drawtiles ( int a, int b , string s )
 {
-    for(int i = 0; i < 10; i++ ){
-        for(int j = 0; j < 10; j++ ){            
+    if(s=="level1")
+    {
+    for(int i = 0; i < a  ; i++ ){
+        for(int j = 0; j < b  ; j++ ){            
                 translatetiles (tiles[i][j].x, tiles[i][j].y, tiles[i][j].z, i, j);   
-                if(board[i][j]==1)
+                if(level1[i][j]==1)
                     rendertiles(i,j);
         }
+    }
+    return;
+    }
+     if(s=="level2")
+    {
+    for(int i = 0; i < a  ; i++ ){
+        for(int j = 0; j < b  ; j++ ){            
+                translatetiles (tiles[i][j].x, tiles[i][j].y, tiles[i][j].z, i, j);   
+                if(level2[i][j]==1)
+                    rendertiles(i,j);
+        }
+    }
     }
     return;
 }
@@ -391,9 +412,16 @@ void keyboard (GLFWwindow* window, int key, int scancode, int action, int mods)
                     Blockobj.z += Blockobj.length;
                     Blockobj.y =1.3f;
                    /* */
-                   
-                    blockrotator(90.0f, glm::vec3(1, 0, 0));
-                    renderblock();
+                    float rots=0.0f;
+                    while(rots<=90.0f)
+                        {
+                            blockrotator(rots, glm::vec3(1, 0, 0));
+                          
+                            rots+=1.0f;
+                            //sleep(0.1);
+                            renderblock();
+                        }
+                          
                     cout << "X is "<< Blockobj.x<< endl;
                     cout << "Y is "<< Blockobj.y<< endl;
                     cout <<"Z is "<< Blockobj.z << endl;
@@ -434,8 +462,16 @@ void keyboard (GLFWwindow* window, int key, int scancode, int action, int mods)
             {
                 Blockobj.z -= 2*Blockobj.length;
                 Blockobj.y =1.3f;
-                blockrotator(90.0f, glm::vec3(1, 0, 0));
-                renderblock();
+                float rots=0.0f;
+                    while(rots<=90.0f)
+                        {
+                            blockrotator(rots, glm::vec3(1, 0, 0));
+                          
+                            rots+=1.0f;
+                            renderblock();
+                        }
+                //blockrotator(90.0f, glm::vec3(1, 0, 0));
+                
                 cout << "X is "<< Blockobj.x<< endl;
                     cout << "Y is "<< Blockobj.y<< endl;
                     cout <<"Z is "<< Blockobj.z << endl;
@@ -474,7 +510,7 @@ void keyboard (GLFWwindow* window, int key, int scancode, int action, int mods)
         case GLFW_KEY_UP:
             if(bstatus=="up")
             {
-                Blockobj.x -= Blockobj.width;
+                Blockobj.x -= 2*Blockobj.width;
                 Blockobj.y =1.3f;
                 blockrotator(90.0f, glm::vec3(0, 0, -1));
                 renderblock();
@@ -496,11 +532,13 @@ void keyboard (GLFWwindow* window, int key, int scancode, int action, int mods)
                     cout << "X is "<< Blockobj.x<< endl;
                     cout << "Y is "<< Blockobj.y<< endl;
                     cout <<"Z is "<< Blockobj.z << endl;
+
             }
              else if(bstatus=="horizdown")
             {
                   Blockobj.x -= Blockobj.width;
                   Blockobj.y = 1.3f;
+                  bstatus="up";
                    // blockrotator ( 0.0f, glm::vec3 ( 1,0,0 ) );
                   renderblock();
                   cout << "X is "<< Blockobj.x<< endl;
@@ -642,10 +680,10 @@ void reshapeWindow (GLFWwindow* window, int width, int height)
 
     // Store the projection matrix in a variable for future use
     // Perspective projection for 3D views
-    Matrices.projectionP = glm::perspective(fov, (GLfloat) fbwidth / (GLfloat) fbheight, 0.1f, 900.0f);
+    Matrices.projectionP = glm::perspective(glm::radians(45.0f), (GLfloat) fbwidth / (GLfloat) fbheight, 0.1f, 9000.0f);
 
     // Ortho projection for 2D views
-   Matrices.projectionO = glm::ortho(-4.0f, 4.0f, -4.0f, 4.0f, 0.01f, 500.0f);
+   Matrices.projectionO = glm::ortho(-3.4f, 3.4f, -3.4f, 3.4f, 0.1f, 5000.0f);
 }
 
 VAO *triangle, *rectangle, *box, *block;
@@ -732,13 +770,42 @@ void createBlock(float l, float b, float h, float r, float g, float bl, float x,
         0, h, l, b, h, l, b, h, 0, b, h, 0, 0, h, 0, 0, h, l         //6
     };
     GLfloat color_buffer_data [ ] = {
-    r, g, bl, r, g, bl, r, g, bl, r, g, bl, r, g, bl, r, g, bl,
-        r, g, bl, r, g, bl, r, g, bl, r, g, bl, r, g, bl, r, g, bl,
-        r, g, bl, r, g, bl, r, g, bl, r, g, bl, r, g, bl, r, g, bl,
-        
-        r, g, bl, r, g, bl, r, g, bl, r, g, bl, r, g, bl, r, g, bl,
-        r, g, bl, r, g, bl, r, g, bl, r, g, bl, r, g, bl, r, g, bl,
-        r, g, bl, r, g, bl, r, g, bl, r, g, bl, r, g, bl, r, g, bl
+    0.583f,  0.771f,  0.014f,
+    0.609f,  0.115f,  0.436f,
+    0.327f,  0.483f,  0.844f,
+    0.822f,  0.569f,  0.201f,
+    0.435f,  0.602f,  0.223f,
+    0.310f,  0.747f,  0.185f,
+    0.597f,  0.770f,  0.761f,
+    0.559f,  0.436f,  0.730f,
+    0.359f,  0.583f,  0.152f,
+    0.483f,  0.596f,  0.789f,
+    0.559f,  0.861f,  0.639f,
+    0.195f,  0.548f,  0.859f,
+    0.014f,  0.184f,  0.576f,
+    0.771f,  0.328f,  0.970f,
+    0.406f,  0.615f,  0.116f,
+    0.676f,  0.977f,  0.133f,
+    0.971f,  0.572f,  0.833f,
+    0.140f,  0.616f,  0.489f,
+    0.997f,  0.513f,  0.064f,
+    0.945f,  0.719f,  0.592f,
+    0.543f,  0.021f,  0.978f,
+    0.279f,  0.317f,  0.505f,
+    0.167f,  0.620f,  0.077f,
+    0.347f,  0.857f,  0.137f,
+    0.055f,  0.953f,  0.042f,
+    0.714f,  0.505f,  0.345f,
+    0.783f,  0.290f,  0.734f,
+    0.722f,  0.645f,  0.174f,
+    0.302f,  0.455f,  0.848f,
+    0.225f,  0.587f,  0.040f,
+    0.517f,  0.713f,  0.338f,
+    0.053f,  0.959f,  0.120f,
+    0.393f,  0.621f,  0.362f,
+    0.673f,  0.211f,  0.457f,
+    0.820f,  0.883f,  0.371f,
+    0.982f,  0.099f,  0.879f
     };
     block = create3DObject(GL_TRIANGLES, 36, vertex_buffer_data, color_buffer_data, GL_FILL);
 
@@ -820,11 +887,11 @@ void draw (GLFWwindow* window, float x, float y, float w, float h)
     if(view=="default")
     { 
     // Eye - Location of camera. Don't change unless you are sure!!
-    glm::vec3 eye ( 3*cos(camera_rotation_angle*M_PI/180.0f), 3, 3*sin(camera_rotation_angle*M_PI/180.0f) );
-     //glm::vec3 eye ( 1.5,1.5,1.5);
+   // glm::vec3 eye ( 3*cos(camera_rotation_angle*M_PI/180.0f), 3, 3*sin(camera_rotation_angle*M_PI/180.0f) );
+     glm::vec3 eye ( 3,4,3);
 
     // Target - Where is the camera looking at.  Don't change unless you are sure!!
-    glm::vec3 target (0,1,0);
+    glm::vec3 target (0,0,0);
     // Up - Up vector defines tilt of camera.  Don't change unless you are sure!!
     glm::vec3 up (0, 1, 0);
 
@@ -836,10 +903,10 @@ void draw (GLFWwindow* window, float x, float y, float w, float h)
 
     if(view=="top")
     {
-         glm::vec3 eye ( 1.51,2.51,1.51);
+         glm::vec3 eye ( 1.51,1.51,0);
 
     // Target - Where is the camera looking at.  Don't change unless you are sure!!
-    glm::vec3 target (1.5,0,1.5);
+    glm::vec3 target (1.5,0,0);
     // Up - Up vector defines tilt of camera.  Don't change unless you are sure!!
     glm::vec3 up (0,1,0);
      Matrices.view = glm::lookAt(eye, target, up); // Fixed camera for 2D (ortho) in XY plane
@@ -917,17 +984,23 @@ void draw (GLFWwindow* window, float x, float y, float w, float h)
     MVP = VP * Matrices.model;
     glUniformMatrix4fv(Matrices.MatrixID, 1, GL_FALSE, &MVP[0][0]);   */ 
    
+    if(level=="level1")
+       
+       {
+            drawtiles(6,10, "level1");
+            if(Blockobj.x <0 ||  Blockobj.z < 0 || Blockobj.x >=3 || Blockobj.z >= 3)
+                    Blockobj.y -=0.1f;
+            
+       }
+                        
     
-    drawtiles();
+   LABEL: if(level=="level2")
+       {
 
-    if(Blockobj.x <0 ||  Blockobj.z < 0 || Blockobj.x >=3 || Blockobj.z >= 3)
-    {       
-                
-                Blockobj.y -=0.1f;
-                
-          
+        drawtiles(6,15, "level2");
+       }
 
-    }
+    
     renderblock();
     
       
@@ -987,27 +1060,59 @@ void initGL (GLFWwindow* window, int width, int height)
     //createRectangle ();
 	//createBox(0.3f, 0.3f, -0.3f, 1,1,0, 1,1,1,0,0);
     //Create the boxes
-    for(int i = 0; i < 10; i++ ){
+
+
+    //LEVEL 1
+   /* if(level=="level1")
+    {
+    for(int i = 0; i < 6; i++ ){
          x_ordinate = 0.0f;
         for(int j = 0; j < 10;j++){
             if((i + j) % 2 == 0){
                 y_ordinate =  1.0f;
-                createBox(0.3f, 0.3f, -0.1f, 1, 1, 0, x_ordinate, y_ordinate, z_ordinate, i, j);
+                createBox(0.3f, 0.3f, -0.1f, 238.0/256.0, 47.0/256.0, 127.0/256.0, x_ordinate, y_ordinate, z_ordinate, i, j);
                
             }
             else{
                 y_ordinate =  1.0f;
-                createBox(0.3f, 0.3f, -0.1f, 0, 0, 1, x_ordinate, y_ordinate, z_ordinate, i, j);
+                createBox(0.3f, 0.3f, -0.1f, 59.0/256.0, 28.0/256.0, 180.0/256.0, x_ordinate, y_ordinate, z_ordinate, i, j);
                 
             }
             x_ordinate += 0.3f;
         }
         z_ordinate += 0.3f;
     }
-    x_ordinate = 0.0f;
+    x_ordinate = 0.3f;
     y_ordinate = 1.0f ;
-    z_ordinate = 0.0f;
+    z_ordinate = 0.3f;
     createBlock(0.3f, 0.3f, 0.6f, 1, 0,1,x_ordinate, y_ordinate, z_ordinate);
+    }
+
+    //LEVEL 2
+    else if(level=="level2")
+    {*/
+        for(int i = 0; i < 100; i++ ){
+         x_ordinate = 0.0f;
+        for(int j = 0; j < 100;j++){
+            if((i + j) % 2 == 0){
+                y_ordinate =  1.0f;
+                createBox(0.3f, 0.3f, -0.1f, 238.0/256.0, 47.0/256.0, 127.0/256.0, x_ordinate, y_ordinate, z_ordinate, i, j);
+               
+            }
+            else{
+                y_ordinate =  1.0f;
+                createBox(0.3f, 0.3f, -0.1f,59.0/256.0, 28.0/256.0, 180.0/256.0, x_ordinate, y_ordinate, z_ordinate, i, j);
+                
+            }
+            x_ordinate += 0.3f;
+        }
+        z_ordinate += 0.3f;
+    }
+    x_ordinate = 0.3f;
+    y_ordinate = 1.0f ;
+    z_ordinate = 0.3f;
+    createBlock(0.3f, 0.3f, 0.6f, 0.47, 0.3,0.56,x_ordinate, y_ordinate, z_ordinate);
+    
 
     // Create and compile our GLSL program from the shaders
     programID = LoadShaders( "Sample_GL.vert", "Sample_GL.frag" );
@@ -1052,6 +1157,14 @@ int main (int argc, char** argv)
 
         // OpenGL Draw commands
 	draw(window, 0, 0, 1, 1);
+    if(fabs(Blockobj.x-2.1)<0.1 && fabs(Blockobj.y-1)<0.1  && fabs(Blockobj.z-1.2)<0.1 &&bstatus=="up" )
+            {
+                Blockobj.x =0.3f;
+                Blockobj.y=1.0f;
+                Blockobj.z=0.3f;
+                level="level2";
+               
+            }
 	// proj_type ^= 1;
 	// draw(window, 0.5, 0, 0.5, 1);
 	// proj_type ^= 1;
