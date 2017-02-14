@@ -342,7 +342,7 @@ bool rectangle_rot_status = true;
  
    int level3[6][15] = {
         {0,0,0,0,0,0,1,1,1,1,0,0,1,1,1},
-        {1,1,1,1,0,0,1,1,1,1,0,0,1,0,1},
+        {1,1,1,1,0,0,1,1,1,1,0,0,1,2,1},
         {1,1,1,1,0,0,1,1,1,1,0,0,1,1,1},
         {1,1,1,1,0,0,1,1,1,1,0,0,1,1,1},
         {1,1,1,1,0,0,1,1,1,1,0,0,1,1,1},
@@ -438,7 +438,7 @@ void keyboard (GLFWwindow* window, int key, int scancode, int action, int mods)
                         {
                             blockrotator(rots, glm::vec3(1, 0, 0));
                           
-                            rots+=1.0f;
+                            rots+=0.01f;
                             //sleep(0.1);
                             renderblock();
                         }
@@ -484,13 +484,10 @@ void keyboard (GLFWwindow* window, int key, int scancode, int action, int mods)
                 Blockobj.z -= 2*Blockobj.length;
                 Blockobj.y =1.3f;
                 float rots=0.0f;
-                    while(rots<=90.0f)
-                        {
-                            blockrotator(rots, glm::vec3(1, 0, 0));
+                    
+                            blockrotator(90.0f, glm::vec3(1, 0, 0));
                           
-                            rots+=1.0f;
-                            renderblock();
-                        }
+                           
                 //blockrotator(90.0f, glm::vec3(1, 0, 0));
                 
                 cout << "X is "<< Blockobj.x<< endl;
@@ -560,7 +557,7 @@ void keyboard (GLFWwindow* window, int key, int scancode, int action, int mods)
                   Blockobj.x -= Blockobj.width;
                   Blockobj.y = 1.3f;
                   bstatus="horizdown";
-                   // blockrotator ( 0.0f, glm::vec3 ( 1,0,0 ) );
+                    //blockrotator ( 180.0f, glm::vec3 ( 0,0,-1 ) );
                   renderblock();
                   cout << "X is "<< Blockobj.x<< endl;
                     cout << "Y is "<< Blockobj.y<< endl;
@@ -909,10 +906,10 @@ void draw (GLFWwindow* window, float x, float y, float w, float h)
     { 
     // Eye - Location of camera. Don't change unless you are sure!!
    // glm::vec3 eye ( 3*cos(camera_rotation_angle*M_PI/180.0f), 3, 3*sin(camera_rotation_angle*M_PI/180.0f) );
-     glm::vec3 eye ( 4,4,4);
+     glm::vec3 eye ( 3.8,3.8,4);
 
     // Target - Where is the camera looking at.  Don't change unless you are sure!!
-    glm::vec3 target (0,0,0);
+    glm::vec3 target (2,0,0);
     // Up - Up vector defines tilt of camera.  Don't change unless you are sure!!
     glm::vec3 up (0, 1, 0);
 
@@ -928,10 +925,10 @@ void draw (GLFWwindow* window, float x, float y, float w, float h)
          
          if(level=="level1")
          {
-             glm::vec3 eye ( 0,5,0);
+             glm::vec3 eye ( 1.1,3,1);
 
     // Target - Where is the camera looking at.  Don't change unless you are sure!!
-    glm::vec3 target (0,0,0);
+    glm::vec3 target (1.1,0,1);
     // Up - Up vector defines tilt of camera.  Don't change unless you are sure!!
     glm::vec3 up (-1,0,0);
          Matrices.view = glm::lookAt(eye, target, up); // Fixed camera for 2D (ortho) in XY plane
@@ -941,10 +938,10 @@ void draw (GLFWwindow* window, float x, float y, float w, float h)
 
          else if(level=="level2")
          {
-             glm::vec3 eye ( 0,10,0);
+             glm::vec3 eye ( 2.5,4,0);
 
     // Target - Where is the camera looking at.  Don't change unless you are sure!!
-             glm::vec3 target (0,0,0);
+             glm::vec3 target (2.5,0,0);
     // Up - Up vector defines tilt of camera.  Don't change unless you are sure!!
              glm::vec3 up (-1,0,0);
          Matrices.view = glm::lookAt(eye, target, up); // Fixed camera for 2D (ortho) in XY plane
@@ -952,10 +949,10 @@ void draw (GLFWwindow* window, float x, float y, float w, float h)
          }
          else if(level=="level3")
          {
-             glm::vec3 eye ( 0,10,0);
+             glm::vec3 eye ( 2.8,4,0);
 
     // Target - Where is the camera looking at.  Don't change unless you are sure!!
-             glm::vec3 target (0,0,0);
+             glm::vec3 target (2.8,0,0);
     // Up - Up vector defines tilt of camera.  Don't change unless you are sure!!
              glm::vec3 up (-1,0,0);
          Matrices.view = glm::lookAt(eye, target, up); // Fixed camera for 2D (ortho) in XY plane
@@ -1039,7 +1036,8 @@ void draw (GLFWwindow* window, float x, float y, float w, float h)
        
        {
             drawtiles(6,10, "level1");
-            if(Blockobj.x <0 ||  Blockobj.z < 0 || Blockobj.x >=3 || Blockobj.z >= 3)
+            
+            if(level1[(int)(Blockobj.z/0.3f)][(int)(Blockobj.x/0.3f)] ==0 || (Blockobj.x <0 ||  Blockobj.z < 0 || Blockobj.x >=3 || Blockobj.z >= 3))
                     Blockobj.y -=0.1f;
             
        }
@@ -1049,11 +1047,25 @@ void draw (GLFWwindow* window, float x, float y, float w, float h)
        {
 
         drawtiles(6,15, "level2");
+         if(level2[(int)(Blockobj.z/0.3f)][(int)(Blockobj.x/0.3f)] ==0 || (Blockobj.x <0 ||  Blockobj.z < 0 || Blockobj.x >=10 || Blockobj.z >= 10))
+                    Blockobj.y -=0.1f;
        }
 
     if(level=="level3")
     {
         drawtiles(6,15,"level3");
+        if(fabs(Blockobj.x-0.6)<0.1  && fabs(Blockobj.z-0.6)<0.1 )
+             {
+                    level3[4][4]=1;
+                    level3[4][5]=1;
+             }
+        if(fabs(Blockobj.x-2.4)<0.1  && fabs(Blockobj.z-0.3)<0.1 )
+             {
+                    level3[4][10]=1;
+                    level3[4][11]=1;
+             }
+         if(level3[(int)(Blockobj.z/0.3f)][(int)(Blockobj.x/0.3f)] ==0 || (Blockobj.x <0 ||  Blockobj.z < 0 || Blockobj.x >=10 || Blockobj.z >= 10))
+                    Blockobj.y -=0.1f;    
     }
 
     
@@ -1229,6 +1241,10 @@ int main (int argc, char** argv)
         Blockobj.z=1.2f;
         level="level3";
         flag=3;
+        createBox(0.3f, 0.3f, -0.1f, 200.0/256.0, 147.0/256.0, 27.0/256.0, 2.4f, 1.0f, 0.3f, 1, 8);
+        createBox(0.3f, 0.3f, -0.1f, 200.0/256.0, 147.0/256.0, 27.0/256.0, 0.6f, 1.0f, 0.6f, 2,2);
+
+
     }
 	// proj_type ^= 1;
 	// draw(window, 0.5, 0, 0.5, 1);
