@@ -19,6 +19,8 @@
 
 
 using namespace std;
+//GLOBAL COUNT MOVES
+GLint count=0;
 
 struct VAO {
     GLuint VertexArrayID;
@@ -487,6 +489,7 @@ void keyboard (GLFWwindow* window, int key, int scancode, int action, int mods)
                 view="followcam";
                 break;
     case GLFW_KEY_LEFT:
+                count++;
                 if(bstatus == "up")
                 {
                     Blockobj.z += Blockobj.length;
@@ -538,6 +541,7 @@ void keyboard (GLFWwindow* window, int key, int scancode, int action, int mods)
                 break;
 
      case GLFW_KEY_RIGHT:
+            count++;
             if(bstatus=="up")
             {
                 Blockobj.z -= 2*Blockobj.length;
@@ -585,6 +589,7 @@ void keyboard (GLFWwindow* window, int key, int scancode, int action, int mods)
              break;
 
         case GLFW_KEY_UP:
+            count++;
             if(bstatus=="up")
             {
                 Blockobj.x -= 2*Blockobj.width;
@@ -626,6 +631,7 @@ void keyboard (GLFWwindow* window, int key, int scancode, int action, int mods)
             break;
 
         case GLFW_KEY_DOWN:
+            count++;
             if(bstatus=="up")
             {
                 Blockobj.x += Blockobj.width;
@@ -950,8 +956,7 @@ float triangle_rotation = 0;
 double t1;
 double t2;
 
-//GLOBAL COUNT
-GLint count=0;
+
 
 /* Render the scene with openGL */
 /* Edit this function according to your assignment */
@@ -1445,6 +1450,7 @@ t1 = glfwGetTime();
 
     if(level=="level1" && fabs(Blockobj.x-2.1)<0.1 && fabs(Blockobj.y-1)<0.1  && fabs(Blockobj.z-1.2)<0.1 &&bstatus=="up" )
             {   
+                count=0;
                 cout << "SWITCHED LEVEL";
                 if(level2[2][3]==3)
                  createBox(0.3f, 0.3f, -0.1f, 238.0/256.0, 47.0/256.0, 127.0/256.0, 0.9f, 1.0f, 0.6f, 2, 3);
@@ -1466,6 +1472,7 @@ t1 = glfwGetTime();
             }
     if( fabs(Blockobj.x-3.9)<0.1 && fabs(Blockobj.y-1)<0.1  && fabs(Blockobj.z-0.9)<0.1 && bstatus=="up" )
     {
+        count=0;
         Blockobj.x = 0.3f;
         Blockobj.y=1.0f;
         Blockobj.z=1.2f;
@@ -1485,6 +1492,9 @@ t1 = glfwGetTime();
 
         // Poll for Keyboard and mouse events
         glfwPollEvents();
+
+        //Print the no. of MOVES
+        cout << "NO. OF MOVES: " << count << endl;
 
         // Control based on time (Time based transformation like 5 degrees rotation every 0.5s)
         current_time = glfwGetTime(); // Time in seconds
