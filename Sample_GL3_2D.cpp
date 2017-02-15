@@ -3,6 +3,9 @@
 #include <fstream>
 #include <vector>
 #include <map>
+#include <ao/ao.h>
+#include <mpg123.h>
+
 
 #include <GL/glew.h>
 #include <GL/gl.h>
@@ -12,6 +15,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#define BITS 8
+
 
 using namespace std;
 
@@ -73,6 +78,60 @@ typedef struct Base {
     glm::mat4 translate_matrix;
     glm::mat4 rotate_matrix;
 }Base;
+
+//AUDIO INITIALISATION
+mpg123_handle *mh;
+unsigned char *buffer;
+size_t buffer_size;
+size_t done;
+int err;
+
+int driver;
+ao_device *dev;
+
+ao_sample_format format;
+int channels, encoding;
+long rate;
+
+void audio_init() {
+    /* initializations */
+    ao_initialize();
+    driver = ao_default_driver_id();
+    mpg123_init();
+    mh = mpg123_new(NULL, &err);
+    buffer_size= 3000;
+    buffer = (unsigned char*) malloc(buffer_size * sizeof(unsigned char));
+
+    /* open the file and get the decoding format */
+    mpg123_open(mh, "./breakout.mp3");
+    mpg123_getformat(mh, &rate, &channels, &encoding);
+
+    /* set the output format and open the output device */
+    format.bits = mpg123_encsize(encoding) * BITS;
+    format.rate = rate;
+    format.channels = channels;
+    format.byte_format = AO_FMT_NATIVE;
+    format.matrix = 0;
+    dev = ao_open_live(driver, &format, NULL);
+}
+
+void audio_play() {
+    /* decode and play */
+    if (mpg123_read(mh, buffer, buffer_size, &done) == MPG123_OK)
+        ao_play(dev, (char*) buffer, done);
+    else mpg123_seek(mh, 0, SEEK_SET);
+}
+
+void audio_close() {
+    /* clean up */
+    free(buffer);
+    ao_close(dev);
+    mpg123_close(mh);
+    mpg123_delete(mh);
+    mpg123_exit();
+    ao_shutdown();
+}
+
 
 struct Base tiles[100][100];
 struct Base Blockobj;
@@ -886,8 +945,12 @@ float camera_rotation_angle = 45.0f;
 float rectangle_rotation = 0;
 float triangle_rotation = 0;
 
+//TIME LAPSE AT SWITCH
+double t1;
+double t2;
 
-
+//GLOBAL COUNT
+GLint count=0;
 
 /* Render the scene with openGL */
 /* Edit this function according to your assignment */
@@ -1039,6 +1102,25 @@ void draw (GLFWwindow* window, float x, float y, float w, float h)
             
             if(level1[(int)(Blockobj.z/0.3f)][(int)(Blockobj.x/0.3f)] ==0 || (Blockobj.x <0 ||  Blockobj.z < 0 || Blockobj.x >=3 || Blockobj.z >= 3))
                     Blockobj.y -=0.1f;
+                    if(Blockobj.y <= -32.0f )
+                        {
+
+                            Blockobj.x=0.0f;
+                            Blockobj.y=1.0f;
+                            Blockobj.z=0.0f;
+             if (bstatus=="horizdown")
+               {
+                  Blockobj.z -= Blockobj.length;
+                  Blockobj.y = 1.0f;
+                   
+                    blockrotator ( 0.0f, glm::vec3 ( 1,0,0 ) );
+
+                    renderblock();
+                    
+                    bstatus="up";
+               }
+             }
+                    cout << "FALLING Y is " << Blockobj.y << endl;
             
        }
                         
@@ -1047,29 +1129,48 @@ void draw (GLFWwindow* window, float x, float y, float w, float h)
        {
 
         drawtiles(6,15, "level2");
-         if(level2[(int)(Blockobj.z/0.3f)][(int)(Blockobj.x/0.3f)] ==0 || (Blockobj.x <0 ||  Blockobj.z < 0 || Blockobj.x >=10 || Blockobj.z >= 10))
-                    Blockobj.y -=0.1f;
+        /* if(level2[(int)(Blockobj.z/0.3f)][(int)(Blockobj.x/0.3f)] ==0 || (Blockobj.x <0 ||  Blockobj.z < 0 || Blockobj.x >=10 || Blockobj.z >= 10))
+                    // Blockobj.y -=0.1f;*/
        }
+ 
 
     if(level=="level3")
-    {
+    {           t2 = glfwGetTime(); //NOT WORKING. SEARCH FOR A DIFFERENT SOLUTION!
+
         drawtiles(6,15,"level3");
+        
+        
         if(fabs(Blockobj.x-0.6)<0.1  && fabs(Blockobj.z-0.6)<0.1 )
              {
-                    level3[4][4]=1;
-                    level3[4][5]=1;
+                    count++;
              }
+        if(count%2==1)
+             {
+                  level3[4][4]=1;
+                      level3[4][5]=1;
+                  }
+        if(count%2==0)
+        {
+            level3[4][4]=0;
+                    level3[4][5]=0;
+        }
+
+
+
         if(fabs(Blockobj.x-2.4)<0.1  && fabs(Blockobj.z-0.3)<0.1 )
              {
-                    level3[4][10]=1;
-                    level3[4][11]=1;
+                    level3[4][10]=!level3[4][10];
+                    level3[4][11]=!level3[4][11];
              }
+        
+        
          if(level3[(int)(Blockobj.z/0.3f)][(int)(Blockobj.x/0.3f)] ==0 || (Blockobj.x <0 ||  Blockobj.z < 0 || Blockobj.x >=10 || Blockobj.z >= 10))
                     Blockobj.y -=0.1f;    
     }
 
     
     renderblock();
+    t1=t2;
     
       
     // Increment angles
@@ -1214,9 +1315,11 @@ int main (int argc, char** argv)
     GLFWwindow* window = initGLFW(width, height);
     initGLEW();
     initGL (window, width, height);
+    audio_init();
+
 
     double last_update_time = glfwGetTime(), current_time;
-
+t1 = glfwGetTime();
     /* Draw in loop */
     while (!glfwWindowShouldClose(window)) {
 
@@ -1225,6 +1328,8 @@ int main (int argc, char** argv)
 
         // OpenGL Draw commands
 	draw(window, 0, 0, 1, 1);
+    audio_play();
+
     if(level=="level1" && fabs(Blockobj.x-2.1)<0.1 && fabs(Blockobj.y-1)<0.1  && fabs(Blockobj.z-1.2)<0.1 &&bstatus=="up" )
             {
                 Blockobj.x =0.3f;
@@ -1263,7 +1368,7 @@ int main (int argc, char** argv)
             last_update_time = current_time;
         }
     }
-
+    audio_close();
     glfwTerminate();
     //    exit(EXIT_SUCCESS);
 }
