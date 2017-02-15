@@ -540,9 +540,9 @@ void keyboard (GLFWwindow* window, int key, int scancode, int action, int mods)
                             renderblock();
                         }
                           
-                    cout << "X is "<< Blockobj.x<< endl;
+                   /* cout << "X is "<< Blockobj.x<< endl;
                     cout << "Y is "<< Blockobj.y<< endl;
-                    cout <<"Z is "<< Blockobj.z << endl;
+                    cout <<"Z is "<< Blockobj.z << endl;*/
                    
                     bstatus="horizdown";
                 }
@@ -556,9 +556,9 @@ void keyboard (GLFWwindow* window, int key, int scancode, int action, int mods)
                     renderblock();
                      
                     bstatus="up";
-                    cout << "X is "<< Blockobj.x<< endl;
+                    /*cout << "X is "<< Blockobj.x<< endl;
                     cout << "Y is "<< Blockobj.y<< endl;
-                    cout <<"Z is "<< Blockobj.z << endl;
+                    cout <<"Z is "<< Blockobj.z << endl;*/
                 }
           
           else if (bstatus=="lateraldown")
@@ -569,9 +569,9 @@ void keyboard (GLFWwindow* window, int key, int scancode, int action, int mods)
                     //blockrotator ( 0.0f, glm::vec3 ( 0,0,-1 ) );
 
                     renderblock();
-                    cout << "X is "<< Blockobj.x<< endl;
+                   /* cout << "X is "<< Blockobj.x<< endl;
                     cout << "Y is "<< Blockobj.y<< endl;
-                    cout <<"Z is "<< Blockobj.z << endl;
+                    cout <<"Z is "<< Blockobj.z << endl;*/
              }
                 break;
 
@@ -588,9 +588,9 @@ void keyboard (GLFWwindow* window, int key, int scancode, int action, int mods)
                            
                 //blockrotator(90.0f, glm::vec3(1, 0, 0));
                 
-                cout << "X is "<< Blockobj.x<< endl;
+                /*cout << "X is "<< Blockobj.x<< endl;
                     cout << "Y is "<< Blockobj.y<< endl;
-                    cout <<"Z is "<< Blockobj.z << endl;
+                    cout <<"Z is "<< Blockobj.z << endl;*/
                 bstatus="horizdown";
                    
                 
@@ -603,9 +603,9 @@ void keyboard (GLFWwindow* window, int key, int scancode, int action, int mods)
                     blockrotator ( 0.0f, glm::vec3 ( 1,0,0 ) );
 
                     renderblock();
-                     cout << "X is "<< Blockobj.x<< endl;
+                     /*cout << "X is "<< Blockobj.x<< endl;
                     cout << "Y is "<< Blockobj.y<< endl;
-                    cout <<"Z is "<< Blockobj.z << endl;
+                    cout <<"Z is "<< Blockobj.z << endl;*/
                     bstatus="up";
                     
                 }
@@ -617,9 +617,9 @@ void keyboard (GLFWwindow* window, int key, int scancode, int action, int mods)
                     //blockrotator ( 0.0f, glm::vec3 ( 0,0,-1 ) );
 
                     renderblock();
-                    cout << "X is "<< Blockobj.x<< endl;
+                   /* cout << "X is "<< Blockobj.x<< endl;
                     cout << "Y is "<< Blockobj.y<< endl;
-                    cout <<"Z is "<< Blockobj.z << endl;
+                    cout <<"Z is "<< Blockobj.z << endl;*/
              }
              break;
 
@@ -633,9 +633,9 @@ void keyboard (GLFWwindow* window, int key, int scancode, int action, int mods)
                 renderblock();
                      
                     bstatus="lateraldown";
-                    cout << "X is "<< Blockobj.x<< endl;
+                   /* cout << "X is "<< Blockobj.x<< endl;
                     cout << "Y is "<< Blockobj.y<< endl;
-                    cout <<"Z is "<< Blockobj.z << endl;
+                    cout <<"Z is "<< Blockobj.z << endl;*/
             }              
             else if (bstatus=="lateraldown")
             {
@@ -646,9 +646,9 @@ void keyboard (GLFWwindow* window, int key, int scancode, int action, int mods)
 
                     renderblock();
                     bstatus="up";
-                    cout << "X is "<< Blockobj.x<< endl;
+                   /* cout << "X is "<< Blockobj.x<< endl;
                     cout << "Y is "<< Blockobj.y<< endl;
-                    cout <<"Z is "<< Blockobj.z << endl;
+                    cout <<"Z is "<< Blockobj.z << endl;*/
 
             }
              else if(bstatus=="horizdown") 
@@ -658,9 +658,9 @@ void keyboard (GLFWwindow* window, int key, int scancode, int action, int mods)
                   bstatus="horizdown";
                     //blockrotator ( 180.0f, glm::vec3 ( 0,0,-1 ) );
                   renderblock();
-                  cout << "X is "<< Blockobj.x<< endl;
+                  /*cout << "X is "<< Blockobj.x<< endl;
                     cout << "Y is "<< Blockobj.y<< endl;
-                    cout <<"Z is "<< Blockobj.z << endl;
+                    cout <<"Z is "<< Blockobj.z << endl;*/
                      
             }
             break;
@@ -675,9 +675,9 @@ void keyboard (GLFWwindow* window, int key, int scancode, int action, int mods)
                 renderblock();
                      
                     bstatus="lateraldown";
-                      cout << "X is "<< Blockobj.x<< endl;
+                     /* cout << "X is "<< Blockobj.x<< endl;
                     cout << "Y is "<< Blockobj.y<< endl;
-                    cout <<"Z is "<< Blockobj.z << endl;
+                    cout <<"Z is "<< Blockobj.z << endl;*/
             }              
             else if (bstatus=="lateraldown")
             {
@@ -688,9 +688,9 @@ void keyboard (GLFWwindow* window, int key, int scancode, int action, int mods)
                     renderblock();
                     bstatus="up";
 
-                      cout << "haha X is "<< Blockobj.x<< endl;
+                     /* cout << "haha X is "<< Blockobj.x<< endl;
                     cout << "Y is "<< Blockobj.y<< endl;
-                    cout <<"Z is "<< Blockobj.z << endl;
+                    cout <<"Z is "<< Blockobj.z << endl;*/
             }
             else if(bstatus=="horizdown")
             {
@@ -698,9 +698,9 @@ void keyboard (GLFWwindow* window, int key, int scancode, int action, int mods)
                   Blockobj.y = 1.3f;
                    // blockrotator ( 0.0f, glm::vec3 ( 1,0,0 ) );
                   renderblock();
-                  cout << "X is "<< Blockobj.x<< endl;
+                /*  cout << "X is "<< Blockobj.x<< endl;
                     cout << "Y is "<< Blockobj.y<< endl;
-                    cout <<"Z is "<< Blockobj.z << endl;
+                    cout <<"Z is "<< Blockobj.z << endl;*/
                      
             }
             break;
@@ -1173,9 +1173,9 @@ void draw (GLFWwindow* window, float x, float y, float w, float h)
             if(bstatus=="up" && level1[(int)((Blockobj.z/0.3f))][(int)(((Blockobj.x/0.3f)))] == 3   )
                     {
                         Blockobj.y -=0.1f;
-                        cout << " HI I AM " << (int)(Blockobj.z/0.3f) << endl;
+                       /* cout << " HI I AM " << (int)(Blockobj.z/0.3f) << endl;
                         cout << " Hw I AM " << (int)(Blockobj.x/0.3f) << endl;
-                        cout << "status is " << bstatus;
+                        cout << "status is " << bstatus;*/
 
                     }
 
@@ -1234,9 +1234,9 @@ void draw (GLFWwindow* window, float x, float y, float w, float h)
         if(bstatus=="up" && fabs(Blockobj.x -3.6)<0.1f  && (Blockobj.z -0.9) <0.01f)
         {
             Blockobj.y -=0.1f;
-                        cout << " HI I AM lllllll  X IS " << Blockobj.x<< endl;
+                        /*cout << " HI I AM lllllll  X IS " << Blockobj.x<< endl;
                         cout << " Hw I AM Z IS " << Blockobj.z << endl;
-                        cout << "status is " << bstatus;
+                        cout << "status is " << bstatus;*/
         }
          if(Blockobj.y <= -25.0f )
                         {
@@ -1297,18 +1297,18 @@ void draw (GLFWwindow* window, float x, float y, float w, float h)
         if(bstatus=="up" && fabs(Blockobj.x-2.4)<0.1f && fabs(Blockobj.z-1.2)<0.1f )
                     {
                         Blockobj.y -=0.1f;
-                        cout << " HI I AM " << (int)(Blockobj.z/0.3f) << endl;
+                        /*cout << " HI I AM " << (int)(Blockobj.z/0.3f) << endl;
                         cout << " Hw I AM " << (int)(Blockobj.x/0.3f) << endl;
-                        cout << "status is " << bstatus;
+                        cout << "status is " << bstatus;*/
 
                     }
       //Frgaile tiles
         if(bstatus=="up" && fabs(Blockobj.x-3.6)<0.1f && fabs(Blockobj.z-0.9)<0.1f )
                     {
                         Blockobj.y -=0.1f;
-                        cout << " HI I AM " << (int)(Blockobj.z/0.3f) << endl;
+                        /*cout << " HI I AM " << (int)(Blockobj.z/0.3f) << endl;
                         cout << " Hw I AM " << (int)(Blockobj.x/0.3f) << endl;
-                        cout << "status is " << bstatus;
+                        cout << "status is " << bstatus;*/
 
                     }
          if(Blockobj.y <= -25.0f )
@@ -1504,8 +1504,7 @@ t1 = glfwGetTime();
 
     //Get the mouse cursor position      
     glfwGetCursorPos(window, &leftmouse_x, &leftmouse_y);
-    cout << "leftmousex is :" << leftmouse_x << endl;
-        cout << "leftmousey is :" << leftmouse_y << endl;
+    
     theta = (leftmouse_x*360.0f)/1000.0f;
 
 
@@ -1523,7 +1522,7 @@ t1 = glfwGetTime();
     if(level=="level1" && fabs(Blockobj.x-2.1)<0.1 && fabs(Blockobj.y-1)<0.1  && fabs(Blockobj.z-1.2)<0.1 &&bstatus=="up" )
             {   
                 count=0;
-                cout << "SWITCHED LEVEL";
+                cout << "SWITCHED LEVEL to LEVEL 2!";
                 if(level2[2][3]==3)
                  createBox(0.3f, 0.3f, -0.1f, 238.0/256.0, 47.0/256.0, 127.0/256.0, 0.9f, 1.0f, 0.6f, 2, 3);
                  if(level2[4][8]==3)
@@ -1544,6 +1543,8 @@ t1 = glfwGetTime();
             }
     if( fabs(Blockobj.x-3.9)<0.1 && fabs(Blockobj.y-1)<0.1  && fabs(Blockobj.z-0.9)<0.1 && bstatus=="up" )
     {
+                        cout << "SWITCHED LEVEL to LEVEL 3!";
+
         count=0;
         Blockobj.x = 0.3f;
         Blockobj.y=1.0f;
@@ -1566,7 +1567,7 @@ t1 = glfwGetTime();
         glfwPollEvents();
 
         //Print the no. of MOVES
-        cout << "NO. OF MOVES: " << count << endl;
+        cout << "NO. OF MOVES: " << count << " AND LEVEL IS : " << flag << endl;
 
         // Control based on time (Time based transformation like 5 degrees rotation every 0.5s)
         current_time = glfwGetTime(); // Time in seconds
