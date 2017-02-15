@@ -382,17 +382,17 @@ bool rectangle_rot_status = true;
   int level1[6][10] = {
         {1,1,1,0,0,0,0,0,0,0},
         {1,1,1,1,1,0,0,0,0,0},
-        {1,1,1,1,1,1,1,1,1,0},
+        {1,1,1,3,1,1,1,1,1,0},
         {0,1,1,1,1,1,1,1,1,1},
-        {0,0,0,0,0,1,1,0,1,1},
+        {0,0,0,0,0,1,1,0,3,1},
         {0,0,0,0,0,0,1,1,1,0}
            };
 
    int level2[6][15] = {
         {0,0,0,0,0,0,1,1,1,1,1,1,1,0,0},
         {1,1,1,1,0,0,1,1,1,0,0,1,1,0,0},
-        {1,1,1,1,1,1,1,1,1,0,0,1,1,1,1},
-        {1,1,1,1,0,0,0,0,0,0,0,1,1,0,1},
+        {1,1,1,3,1,1,1,1,1,0,0,1,1,1,1},
+        {1,1,1,1,0,0,0,0,0,0,0,1,3,0,1},
         {1,1,1,1,0,0,0,0,0,0,0,1,1,1,1},
         {1,1,1,1,0,0,0,0,0,0,0,0,1,1,1}
 
@@ -415,7 +415,7 @@ void drawtiles ( int a, int b , string s )
     for(int i = 0; i < a  ; i++ ){
         for(int j = 0; j < b  ; j++ ){            
                 translatetiles (tiles[i][j].x, tiles[i][j].y, tiles[i][j].z, i, j);   
-                if(level1[i][j]==1)
+                if(level1[i][j]==1 || level1[i][j]==3)
                     rendertiles(i,j);
         }
     }
@@ -426,7 +426,7 @@ void drawtiles ( int a, int b , string s )
     for(int i = 0; i < a  ; i++ ){
         for(int j = 0; j < b  ; j++ ){            
                 translatetiles (tiles[i][j].x, tiles[i][j].y, tiles[i][j].z, i, j);   
-                if(level2[i][j]==1)
+                if(level2[i][j]==1 || level2[i][j]==3)
                     rendertiles(i,j);
         }
     }
@@ -436,7 +436,7 @@ void drawtiles ( int a, int b , string s )
         for(int i = 0; i < a  ; i++ ){
         for(int j = 0; j < b  ; j++ ){            
                 translatetiles (tiles[i][j].x, tiles[i][j].y, tiles[i][j].z, i, j);   
-                if(level3[i][j]==1)
+                if(level3[i][j]==1 || level3[i][j]==3)
                     rendertiles(i,j);
         }
     }
@@ -646,7 +646,8 @@ void keyboard (GLFWwindow* window, int key, int scancode, int action, int mods)
                     blockrotator ( 0.0f, glm::vec3 ( 0,0,1 ) );
                     renderblock();
                     bstatus="up";
-                      cout << "X is "<< Blockobj.x<< endl;
+
+                      cout << "haha X is "<< Blockobj.x<< endl;
                     cout << "Y is "<< Blockobj.y<< endl;
                     cout <<"Z is "<< Blockobj.z << endl;
             }
@@ -757,7 +758,7 @@ void reshapeWindow (GLFWwindow* window, int width, int height)
 
     // Store the projection matrix in a variable for future use
     // Perspective projection for 3D views
-    Matrices.projectionP = glm::perspective(fov, (GLfloat) fbwidth / (GLfloat) fbheight, 0.1f, 5000.0f);
+    Matrices.projectionP = glm::perspective(fov, (GLfloat) fbwidth / (GLfloat) fbheight, 0.1f, 500.0f);
 
     // Ortho projection for 2D views
    //Matrices.projectionO = glm::ortho(-3.4f, 3.4f, -3.4f, 3.4f, 0.1f, 5000.0f);
@@ -1025,10 +1026,10 @@ void draw (GLFWwindow* window, float x, float y, float w, float h)
 
     if(view=="block")
     {
-        glm::vec3 eye ( Blockobj.x+0.8f,1.6f ,Blockobj.z);
+        glm::vec3 eye ( Blockobj.x-0.8f,1.6f ,Blockobj.z);
 
     // Target - Where is the camera looking at.  Don't change unless you are sure!!
-    glm::vec3 target (Blockobj.x+5.0f, 1.0f, Blockobj.z+3.0);
+    glm::vec3 target (-1000.0f, -100, Blockobj.z);
     // Up - Up vector defines tilt of camera.  Don't change unless you are sure!!
     glm::vec3 up (0, 1, 0);
      Matrices.view = glm::lookAt(eye, target, up); // Fixed camera for 2D (ortho) in XY plane
@@ -1037,10 +1038,10 @@ void draw (GLFWwindow* window, float x, float y, float w, float h)
 
     if(view=="followcam")
     {
-         glm::vec3 eye ( Blockobj.x-0.3f,Blockobj.y+1.0f,Blockobj.z);
+         glm::vec3 eye ( Blockobj.x+1.2f,1.8f,Blockobj.z);
 
     // Target - Where is the camera looking at.  Don't change unless you are sure!!
-    glm::vec3 target (-1.5,1,-1.5);
+    glm::vec3 target (-1000.0f,-100,Blockobj.z);
     // Up - Up vector defines tilt of camera.  Don't change unless you are sure!!
     glm::vec3 up (0, 1, 0);
      Matrices.view = glm::lookAt(eye, target, up); // Fixed camera for 2D (ortho) in XY plane
@@ -1100,9 +1101,18 @@ void draw (GLFWwindow* window, float x, float y, float w, float h)
        {
             drawtiles(6,10, "level1");
             
-            if(level1[(int)(Blockobj.z/0.3f)][(int)(Blockobj.x/0.3f)] ==0 || (Blockobj.x <0 ||  Blockobj.z < 0 || Blockobj.x >=3 || Blockobj.z >= 3))
+            if((bstatus=="up" && level1[(int)(Blockobj.z/0.3f)][(int)(Blockobj.x/0.3f)] ==0) || (Blockobj.x <-0.1 ||  Blockobj.z < -0.1 || Blockobj.x >=3 || Blockobj.z >= 3) )
                     Blockobj.y -=0.1f;
-                    if(Blockobj.y <= -32.0f )
+            if(bstatus=="up" && level1[(int)((Blockobj.z/0.3f))][(int)(((Blockobj.x/0.3f)))] == 3   )
+                    {
+                        Blockobj.y -=0.1f;
+                        cout << " HI I AM " << (int)(Blockobj.z/0.3f) << endl;
+                        cout << " Hw I AM " << (int)(Blockobj.x/0.3f) << endl;
+                        cout << "status is " << bstatus;
+
+                    }
+
+            if(Blockobj.y <= -25.0f )
                         {
 
                             Blockobj.x=0.0f;
@@ -1119,8 +1129,18 @@ void draw (GLFWwindow* window, float x, float y, float w, float h)
                     
                     bstatus="up";
                }
+            else if (bstatus=="lateraldown")
+                     {
+                    Blockobj.x = 0.0f;
+                  Blockobj.y = 1.0f;
+                   
+                    blockrotator ( 0.0f, glm::vec3 ( 0,0,1 ) );
+                    renderblock();
+                    bstatus="up";
+                    
+                     }
              }
-                    cout << "FALLING Y is " << Blockobj.y << endl;
+                    
             
        }
                         
@@ -1129,8 +1149,56 @@ void draw (GLFWwindow* window, float x, float y, float w, float h)
        {
 
         drawtiles(6,15, "level2");
-        /* if(level2[(int)(Blockobj.z/0.3f)][(int)(Blockobj.x/0.3f)] ==0 || (Blockobj.x <0 ||  Blockobj.z < 0 || Blockobj.x >=10 || Blockobj.z >= 10))
-                    // Blockobj.y -=0.1f;*/
+                                //cout << "status is " << bstatus << endl;
+
+         if(bstatus=="up" && level2[(int)(Blockobj.z/0.3f)][(int)(Blockobj.x/0.3f)] ==0 || (Blockobj.x <0 ||  Blockobj.z < 0 || Blockobj.x >=10 || Blockobj.z >= 10))
+                     Blockobj.y -=0.1f;
+         
+          /*if(bstatus=="up" && level2[(int)((Blockobj.z/0.3f))][(int)(((Blockobj.x/0.3f)))] == 3   )
+                    {
+                        Blockobj.y -=0.1f;
+                        cout << " HI I AM " << (Blockobj.x) << endl;
+                        cout << " Hw I AM " << (int)(Blockobj.x/0.3f) << endl;
+                        cout << "status is " << bstatus;
+
+                    }*/
+
+        //Fragile on level 2
+        if(bstatus=="up" && fabs(Blockobj.x -3.6)<0.1f  && (Blockobj.z -0.9) <0.01f)
+        {
+            Blockobj.y -=0.1f;
+                        cout << " HI I AM lllllll  X IS " << Blockobj.x<< endl;
+                        cout << " Hw I AM Z IS " << Blockobj.z << endl;
+                        cout << "status is " << bstatus;
+        }
+         if(Blockobj.y <= -25.0f )
+                        {
+
+                            Blockobj.x=0.3f;
+                            Blockobj.y=1.0f;
+                            Blockobj.z=0.3f;
+             if (bstatus=="horizdown")
+               {
+                  Blockobj.z -= Blockobj.length;
+                  Blockobj.y = 1.0f;
+                   
+                    blockrotator ( 0.0f, glm::vec3 ( 1,0,0 ) );
+
+                    renderblock();
+                    
+                    bstatus="up";
+               }
+            else if (bstatus=="lateraldown")
+                     {
+                    Blockobj.x = 0.0f;
+                  Blockobj.y = 1.0f;
+                   
+                    blockrotator ( 0.0f, glm::vec3 ( 0,0,1 ) );
+                    renderblock();
+                    bstatus="up";
+                    
+                     }
+             }
        }
  
 
@@ -1139,33 +1207,71 @@ void draw (GLFWwindow* window, float x, float y, float w, float h)
 
         drawtiles(6,15,"level3");
         
-        
+        //BRIDGE LEVELS
         if(fabs(Blockobj.x-0.6)<0.1  && fabs(Blockobj.z-0.6)<0.1 )
              {
-                    count++;
-             }
-        if(count%2==1)
-             {
-                  level3[4][4]=1;
+                   level3[4][4]=1;
                       level3[4][5]=1;
-                  }
-        if(count%2==0)
-        {
-            level3[4][4]=0;
-                    level3[4][5]=0;
-        }
+             }     
 
 
 
         if(fabs(Blockobj.x-2.4)<0.1  && fabs(Blockobj.z-0.3)<0.1 )
              {
-                    level3[4][10]=!level3[4][10];
-                    level3[4][11]=!level3[4][11];
+                    level3[4][10]=1;
+                    level3[4][11]=1;
              }
         
         
          if(level3[(int)(Blockobj.z/0.3f)][(int)(Blockobj.x/0.3f)] ==0 || (Blockobj.x <0 ||  Blockobj.z < 0 || Blockobj.x >=10 || Blockobj.z >= 10))
-                    Blockobj.y -=0.1f;    
+                    Blockobj.y -=0.1f;  
+
+        //Fragile tiles
+        if(bstatus=="up" && fabs(Blockobj.x-2.4)<0.1f && fabs(Blockobj.z-1.2)<0.1f )
+                    {
+                        Blockobj.y -=0.1f;
+                        cout << " HI I AM " << (int)(Blockobj.z/0.3f) << endl;
+                        cout << " Hw I AM " << (int)(Blockobj.x/0.3f) << endl;
+                        cout << "status is " << bstatus;
+
+                    }
+      //Frgaile tiles
+        if(bstatus=="up" && fabs(Blockobj.x-3.6)<0.1f && fabs(Blockobj.z-0.9)<0.1f )
+                    {
+                        Blockobj.y -=0.1f;
+                        cout << " HI I AM " << (int)(Blockobj.z/0.3f) << endl;
+                        cout << " Hw I AM " << (int)(Blockobj.x/0.3f) << endl;
+                        cout << "status is " << bstatus;
+
+                    }
+         if(Blockobj.y <= -25.0f )
+                        {
+
+                            Blockobj.x=0.3f;
+                            Blockobj.y=1.0f;
+                            Blockobj.z=0.3f;
+             if (bstatus=="horizdown")
+               {
+                  Blockobj.z -= Blockobj.length;
+                  Blockobj.y = 1.0f;
+                   
+                    blockrotator ( 0.0f, glm::vec3 ( 1,0,0 ) );
+
+                    renderblock();
+                    
+                    bstatus="up";
+               }
+            else if (bstatus=="lateraldown")
+                     {
+                    Blockobj.x = 0.0f;
+                  Blockobj.y = 1.0f;
+                   
+                    blockrotator ( 0.0f, glm::vec3 ( 0,0,1 ) );
+                    renderblock();
+                    bstatus="up";
+                    
+                     }
+             }  
     }
 
     
@@ -1263,6 +1369,7 @@ void initGL (GLFWwindow* window, int width, int height)
         for(int i = 0; i < 100; i++ ){
          x_ordinate = 0.0f;
         for(int j = 0; j < 100;j++){
+            
             if((i + j) % 2 == 0){
                 y_ordinate =  1.0f;
                 createBox(0.3f, 0.3f, -0.1f, 238.0/256.0, 47.0/256.0, 127.0/256.0, x_ordinate, y_ordinate, z_ordinate, i, j);
@@ -1288,7 +1395,7 @@ void initGL (GLFWwindow* window, int width, int height)
     // Get a handle for our "MVP" uniform
     Matrices.MatrixID = glGetUniformLocation(programID, "MVP");
 
-	
+
     reshapeWindow (window, width, height);
 
     // Background color of the scene
@@ -1329,17 +1436,35 @@ t1 = glfwGetTime();
         // OpenGL Draw commands
 	draw(window, 0, 0, 1, 1);
     audio_play();
+    if(level=="level1")
+    {
+       createBox(0.3f, 0.3f, -0.1f, 100.0/256.0, 117.0/256.0, 167.0/256.0, 0.9f, 1.0f, 0.6f, 2, 3);
+        createBox(0.3f, 0.3f, -0.1f, 100.0/256.0, 117.0/256.0, 167.0/256.0, 2.4f, 1.0f, 1.2f, 4, 8);
+
+    }
 
     if(level=="level1" && fabs(Blockobj.x-2.1)<0.1 && fabs(Blockobj.y-1)<0.1  && fabs(Blockobj.z-1.2)<0.1 &&bstatus=="up" )
-            {
+            {   
+                cout << "SWITCHED LEVEL";
+                if(level2[2][3]==3)
+                 createBox(0.3f, 0.3f, -0.1f, 238.0/256.0, 47.0/256.0, 127.0/256.0, 0.9f, 1.0f, 0.6f, 2, 3);
+                 if(level2[4][8]==3)
+                 createBox(0.3f, 0.3f, -0.1f, 238.0/256.0, 47.0/256.0, 127.0/256.0, 2.4f, 1.0f, 1.2f, 4, 8);
+
                 Blockobj.x =0.3f;
                 Blockobj.y=1.0f;
                 Blockobj.z=0.3f;
+
+                 createBox(0.3f, 0.3f, -0.1f, 100.0/256.0, 117.0/256.0, 167.0/256.0, 0.9f, 1.0f, 0.6f, 2, 3);
+                 createBox(0.3f, 0.3f, -0.1f, 100.0/256.0, 117.0/256.0, 167.0/256.0, 3.6f, 1.0f, 0.9f, 3, 12);
+
                 level="level2";
+
+                cout << "level2";
                 flag=2;
                
             }
-    if(flag=2 && fabs(Blockobj.x-3.9)<0.1 && fabs(Blockobj.y-1)<0.1  && fabs(Blockobj.z-0.9)<0.1 &&bstatus=="up" )
+    if( fabs(Blockobj.x-3.9)<0.1 && fabs(Blockobj.y-1)<0.1  && fabs(Blockobj.z-0.9)<0.1 && bstatus=="up" )
     {
         Blockobj.x = 0.3f;
         Blockobj.y=1.0f;
