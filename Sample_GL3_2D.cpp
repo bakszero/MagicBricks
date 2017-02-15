@@ -1218,7 +1218,7 @@ void draw (GLFWwindow* window, float x, float y, float w, float h)
         drawtiles(6,15, "level2");
                                 //cout << "status is " << bstatus << endl;
 
-         if(bstatus=="up" && level2[(int)(Blockobj.z/0.3f)][(int)(Blockobj.x/0.3f)] ==0 || (Blockobj.x <0 ||  Blockobj.z < 0 || Blockobj.x >=10 || Blockobj.z >= 10))
+         if( level2[(int)(Blockobj.z/0.3f)][(int)(Blockobj.x/0.3f)] ==0 || (Blockobj.x <0 ||  Blockobj.z < 0 || Blockobj.x >=10 || Blockobj.z >= 10))
                      Blockobj.y -=0.1f;
          
           /*if(bstatus=="up" && level2[(int)((Blockobj.z/0.3f))][(int)(((Blockobj.x/0.3f)))] == 3   )
@@ -1339,6 +1339,14 @@ void draw (GLFWwindow* window, float x, float y, float w, float h)
                     
                      }
              }  
+
+    if( fabs(Blockobj.x-3.9f)<0.1f && fabs(Blockobj.z-0.3f)<0.1f && bstatus=="up")
+        {
+        cout << "Congrats you win!"<<endl;
+        glfwDestroyWindow(window);
+    glfwTerminate();
+    exit(EXIT_SUCCESS);
+     }
     }
 
     
@@ -1466,7 +1474,7 @@ void initGL (GLFWwindow* window, int width, int height)
 
     reshapeWindow (window, width, height);
 
-    float arr[3]={218	,112	,214};
+    float arr[3]={	255, 94, 32	};
     // Background color of the scene
     glClearColor (arr[0]/256.0, arr[1]/256.0f, arr[2]/256.0, 0.0f); // R, G, B, A
     glClearDepth (1.0f);
@@ -1541,7 +1549,7 @@ t1 = glfwGetTime();
                 flag=2;
                
             }
-    if( fabs(Blockobj.x-3.9)<0.1 && fabs(Blockobj.y-1)<0.1  && fabs(Blockobj.z-0.9)<0.1 && bstatus=="up" )
+    if( level=="level2" && fabs(Blockobj.x-3.9)<0.1  && fabs(Blockobj.z-0.9)<0.1 && bstatus=="up" )
     {
                         cout << "SWITCHED LEVEL to LEVEL 3!";
 
@@ -1556,6 +1564,8 @@ t1 = glfwGetTime();
 
 
     }
+
+    
 	// proj_type ^= 1;
 	// draw(window, 0.5, 0, 0.5, 1);
 	// proj_type ^= 1;
