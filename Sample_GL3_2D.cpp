@@ -22,6 +22,32 @@ using namespace std;
 //GLOBAL COUNT MOVES
 GLint count=0;
 
+//Set camera zoom
+GLfloat camera_zoom = 0.2;
+
+
+//Mousepress variable to toggle
+GLint mousepress=0;
+
+
+
+//Define the mouse VARIABLES
+GLdouble rightmouse_click=0;
+GLdouble rightmouse_x;
+GLdouble rightmouse_y;
+GLdouble newrightmouse_x;
+GLdouble newrightmouse_y;
+
+GLdouble leftmouse_click=0;
+GLdouble leftmouse_x;
+GLdouble leftmouse_y;
+GLdouble newleftmouse_x;
+GLdouble newleftmouse_y;
+
+
+//Theta definition Where
+GLdouble theta=0.0f;
+
 struct VAO {
     GLuint VertexArrayID;
     GLuint VertexBuffer;
@@ -332,6 +358,11 @@ float rectangle_rot_dir = 1;
 bool triangle_rot_status = true;
 bool rectangle_rot_status = true;
 
+void mousescroll(GLFWwindow *window, double xoffset, double yoffset)
+{
+    camera_zoom += yoffset / 10;
+}
+
 
 
  void translatetiles(float x, float y , float z, int i, int j)
@@ -487,6 +518,10 @@ void keyboard (GLFWwindow* window, int key, int scancode, int action, int mods)
 
     case GLFW_KEY_F:
                 view="followcam";
+                break;
+    case GLFW_KEY_H:
+                
+                view="helicopter";
                 break;
     case GLFW_KEY_LEFT:
                 count++;
@@ -737,8 +772,17 @@ void mouseButton (GLFWwindow* window, int button, int action, int mods)
     switch (button) {
     case GLFW_MOUSE_BUTTON_LEFT:
 	if (action == GLFW_RELEASE)
-	    triangle_rot_dir *= -1;
+    {
+            mousepress=0;
+    }
+	    
+    else if(action == GLFW_PRESS)
+    {
+            mousepress=1;
+            view="helicopter";
+    }
 	break;
+
     case GLFW_MOUSE_BUTTON_RIGHT:
 	if (action == GLFW_RELEASE) {
 	    rectangle_rot_dir *= -1;
@@ -985,7 +1029,25 @@ void draw (GLFWwindow* window, float x, float y, float w, float h)
     // Compute Camera matrix (view)
     // Matrices.view = glm::lookAt( eye, target, up ); // Rotating Camera for 3D
     //  Don't change unless you are sure!!
-    Matrices.view = glm::lookAt(eye, target, up); // Fixed camera for 2D (ortho) in XY plane
+    Matrices.view = glm::lookAt(eye, target, up)*glm::scale(glm::vec3(exp(camera_zoom))); // Fixed camera for 2D (ortho) in XY plane
+    }
+
+
+    if(view=="helicopter" && mousepress==1)
+    {
+        
+
+     glm::vec3 eye ( 3*cos(theta*M_PI/180.0f),3,3*sin(theta*M_PI/180));
+
+    // Target - Where is the camera looking at.  Don't change unless you are sure!!
+    glm::vec3 target (0,0,0);
+    // Up - Up vector defines tilt of camera.  Don't change unless you are sure!!
+    glm::vec3 up (0, 1, 0);
+
+    // Compute Camera matrix (view)
+    // Matrices.view = glm::lookAt( eye, target, up ); // Rotating Camera for 3D
+    //  Don't change unless you are sure!!
+    Matrices.view = glm::lookAt(eye, target, up)*glm::scale(glm::vec3(exp(camera_zoom))); // Fixed camera for 2D (ortho) in XY plane
     }
 
     if(view=="top")
@@ -1000,7 +1062,7 @@ void draw (GLFWwindow* window, float x, float y, float w, float h)
     glm::vec3 target (1.1,0,1);
     // Up - Up vector defines tilt of camera.  Don't change unless you are sure!!
     glm::vec3 up (-1,0,0);
-         Matrices.view = glm::lookAt(eye, target, up); // Fixed camera for 2D (ortho) in XY plane
+         Matrices.view = glm::lookAt(eye, target, up)*glm::scale(glm::vec3(exp(camera_zoom))); // Fixed camera for 2D (ortho) in XY plane
 
          }
 
@@ -1013,7 +1075,7 @@ void draw (GLFWwindow* window, float x, float y, float w, float h)
              glm::vec3 target (2.5,0,0);
     // Up - Up vector defines tilt of camera.  Don't change unless you are sure!!
              glm::vec3 up (-1,0,0);
-         Matrices.view = glm::lookAt(eye, target, up); // Fixed camera for 2D (ortho) in XY plane
+         Matrices.view = glm::lookAt(eye, target, up)*glm::scale(glm::vec3(exp(camera_zoom))); // Fixed camera for 2D (ortho) in XY plane
 
          }
          else if(level=="level3")
@@ -1024,7 +1086,7 @@ void draw (GLFWwindow* window, float x, float y, float w, float h)
              glm::vec3 target (2.8,0,0);
     // Up - Up vector defines tilt of camera.  Don't change unless you are sure!!
              glm::vec3 up (-1,0,0);
-         Matrices.view = glm::lookAt(eye, target, up); // Fixed camera for 2D (ortho) in XY plane
+         Matrices.view = glm::lookAt(eye, target, up)*glm::scale(glm::vec3(exp(camera_zoom))); // Fixed camera for 2D (ortho) in XY plane
 
          }
     }
@@ -1037,19 +1099,19 @@ void draw (GLFWwindow* window, float x, float y, float w, float h)
     glm::vec3 target (-1000.0f, -100, Blockobj.z);
     // Up - Up vector defines tilt of camera.  Don't change unless you are sure!!
     glm::vec3 up (0, 1, 0);
-     Matrices.view = glm::lookAt(eye, target, up); // Fixed camera for 2D (ortho) in XY plane
+     Matrices.view = glm::lookAt(eye, target, up)*glm::scale(glm::vec3(exp(camera_zoom))); // Fixed camera for 2D (ortho) in XY plane
 
     }
 
     if(view=="followcam")
     {
-         glm::vec3 eye ( Blockobj.x+1.2f,1.8f,Blockobj.z);
+         glm::vec3 eye ( Blockobj.x+1.2f,Blockobj.y+0.8f,Blockobj.z);
 
     // Target - Where is the camera looking at.  Don't change unless you are sure!!
     glm::vec3 target (-1000.0f,-100,Blockobj.z);
     // Up - Up vector defines tilt of camera.  Don't change unless you are sure!!
     glm::vec3 up (0, 1, 0);
-     Matrices.view = glm::lookAt(eye, target, up); // Fixed camera for 2D (ortho) in XY plane
+     Matrices.view = glm::lookAt(eye, target, up)*glm::scale(glm::vec3(exp(camera_zoom))); // Fixed camera for 2D (ortho) in XY plane
 
     }
     // Compute ViewProject matrix as view/camera might not be changed for this frame (basic scenario)
@@ -1323,6 +1385,7 @@ GLFWwindow* initGLFW (int width, int height){
     glfwSetKeyCallback(window, keyboard);      // general keyboard input
     glfwSetCharCallback(window, keyboardChar);  // simpler specific character handling
     glfwSetMouseButtonCallback(window, mouseButton);  // mouse button clicks
+    glfwSetScrollCallback(window, mousescroll); //enable mouse scrolling
 
     return window;
 }
@@ -1403,8 +1466,9 @@ void initGL (GLFWwindow* window, int width, int height)
 
     reshapeWindow (window, width, height);
 
+    float arr[3]={218	,112	,214};
     // Background color of the scene
-    glClearColor (0.3f, 0.3f, 0.3f, 0.0f); // R, G, B, A
+    glClearColor (arr[0]/256.0, arr[1]/256.0f, arr[2]/256.0, 0.0f); // R, G, B, A
     glClearDepth (1.0f);
 
     glEnable (GL_DEPTH_TEST);
@@ -1438,8 +1502,16 @@ t1 = glfwGetTime();
 	// clear the color and depth in the frame buffer
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // OpenGL Draw commands
+    //Get the mouse cursor position      
+    glfwGetCursorPos(window, &leftmouse_x, &leftmouse_y);
+    cout << "leftmousex is :" << leftmouse_x << endl;
+        cout << "leftmousey is :" << leftmouse_y << endl;
+    theta = (leftmouse_x*360.0f)/1000.0f;
+
+
+      // OpenGL Draw commands
 	draw(window, 0, 0, 1, 1);
+
     audio_play();
     if(level=="level1")
     {
