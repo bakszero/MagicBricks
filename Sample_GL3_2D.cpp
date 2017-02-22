@@ -22,6 +22,9 @@ using namespace std;
 //GLOBAL COUNT MOVES
 GLint count=0;
 
+//GLOBAL LIVES
+GLint lives=3;
+
 //Set camera zoom
 GLfloat camera_zoom = 0.2;
 
@@ -423,7 +426,7 @@ void mousescroll(GLFWwindow *window, double xoffset, double yoffset)
         {1,1,1,1,1,0,0,0,0,0},
         {1,1,1,3,1,1,1,1,1,0},
         {0,1,1,1,1,1,1,1,1,1},
-        {0,0,0,0,0,1,1,0,3,1},
+        {0,0,0,0,0,1,1,4,3,1},
         {0,0,0,0,0,0,1,1,1,0}
            };
 
@@ -431,7 +434,7 @@ void mousescroll(GLFWwindow *window, double xoffset, double yoffset)
         {0,0,0,0,0,0,1,1,1,1,1,1,1,0,0},
         {1,1,1,1,0,0,1,1,1,0,0,1,1,0,0},
         {1,1,1,3,1,1,1,1,1,0,0,1,1,1,1},
-        {1,1,1,1,0,0,0,0,0,0,0,1,3,0,1},
+        {1,1,1,1,0,0,0,0,0,0,0,1,3,4,1},
         {1,1,1,1,0,0,0,0,0,0,0,1,1,1,1},
         {1,1,1,1,0,0,0,0,0,0,0,0,1,1,1}
 
@@ -440,7 +443,7 @@ void mousescroll(GLFWwindow *window, double xoffset, double yoffset)
  
    int level3[6][15] = {
         {0,0,0,0,0,0,1,1,1,1,0,0,1,1,1},
-        {1,1,1,1,0,0,1,1,1,1,0,0,1,2,1},
+        {1,1,1,1,0,0,1,1,1,1,0,0,1,4,1},
         {1,1,1,1,0,0,1,1,1,1,0,0,1,1,1},
         {1,1,1,1,0,0,1,1,1,1,0,0,1,1,1},
         {1,1,1,1,0,0,1,1,1,1,0,0,1,1,1},
@@ -628,7 +631,7 @@ void keyboard (GLFWwindow* window, int key, int scancode, int action, int mods)
                 Blockobj.y =1.3f;
                 float rots=0.0f;
 
-                Blockobj.i-=1;
+                Blockobj.i-=2;
                 activated="r";
 
                   
@@ -1323,26 +1326,36 @@ void draw (GLFWwindow* window, float x, float y, float w, float h)
        {
             drawtiles(6,10, "level1");
             
-            if((bstatus=="up" && level1[(int)(Blockobj.z/0.3f)][(int)(Blockobj.x/0.3f)] ==0) || (Blockobj.x <-0.1 ||  Blockobj.z < -0.1 || Blockobj.x >=3 || Blockobj.z >= 3) )
-                    Blockobj.y -=0.1f;
-            if(bstatus=="up" && level1[(int)((Blockobj.z/0.3f))][(int)(((Blockobj.x/0.3f)))] == 3   )
+            if( level1[Blockobj.i][Blockobj.j] ==0 || Blockobj.i <0 ||  Blockobj.i > 5 || Blockobj.j <0 || Blockobj.j >9 )
+
                     {
                         Blockobj.y -=0.1f;
+                    }
+            if(bstatus=="up" && level1[Blockobj.i][Blockobj.j] == 3 )
+                    {
+                        Blockobj.y -=0.1f;
+                    }
                        /* cout << " HI I AM " << (int)(Blockobj.z/0.3f) << endl;
                         cout << " Hw I AM " << (int)(Blockobj.x/0.3f) << endl;
                         cout << "status is " << bstatus;*/
 
-                    }
+                    
 
             if(Blockobj.y <= -25.0f )
                         {
+                            
 
                             Blockobj.x=0.3f;
                             Blockobj.y=1.0f;
                             Blockobj.z=0.3f;
+
+                            lives--;
+
+                            Blockobj.i=1;
+                            Blockobj.j=1;
              if (bstatus=="horizdown")
                {
-                  Blockobj.z -= Blockobj.length;
+                  Blockobj.z = 0.3f;
                   Blockobj.y = 1.0f;
                    
                     blockrotator ( 0.0f, glm::vec3 ( 1,0,0 ) );
@@ -1353,7 +1366,7 @@ void draw (GLFWwindow* window, float x, float y, float w, float h)
                }
             else if (bstatus=="lateraldown")
                      {
-                    Blockobj.x = 0.0f;
+                    Blockobj.x = 0.3f;
                   Blockobj.y = 1.0f;
                    
                     blockrotator ( 0.0f, glm::vec3 ( 0,0,1 ) );
@@ -1373,7 +1386,7 @@ void draw (GLFWwindow* window, float x, float y, float w, float h)
         drawtiles(6,15, "level2");
                                 //cout << "status is " << bstatus << endl;
 
-         if( ( (level2[(int)(Blockobj.z/0.3f)][(int)(Blockobj.x/0.3f)] ==0)) || (Blockobj.x <0 ||  Blockobj.z < 0 || Blockobj.x >=10 || Blockobj.z >= 10))
+         if( ( (level2[Blockobj.i][Blockobj.j] ==0)) || (Blockobj.i <0 ||  Blockobj.j < 0 || Blockobj.i >=15 || Blockobj.j>= 15))
                      Blockobj.y -=0.1f;
          
           /*if(bstatus=="up" && level2[(int)((Blockobj.z/0.3f))][(int)(((Blockobj.x/0.3f)))] == 3   )
@@ -1386,7 +1399,7 @@ void draw (GLFWwindow* window, float x, float y, float w, float h)
                     }*/
 
         //Fragile on level 2
-        if(bstatus=="up" && fabs(Blockobj.x -3.6)<0.1f  && (Blockobj.z -0.9) <0.01f)
+        if(bstatus=="up" && level2[Blockobj.i][Blockobj.j]==3)
         {
             Blockobj.y -=0.1f;
                         /*cout << " HI I AM lllllll  X IS " << Blockobj.x<< endl;
@@ -1399,9 +1412,14 @@ void draw (GLFWwindow* window, float x, float y, float w, float h)
                             Blockobj.x=0.3f;
                             Blockobj.y=1.0f;
                             Blockobj.z=0.3f;
+
+                            lives--;
+
+                            Blockobj.i=1;
+                            Blockobj.j=1;
              if (bstatus=="horizdown")
                {
-                  Blockobj.z -= Blockobj.length;
+                  Blockobj.z = 0.3f;
                   Blockobj.y = 1.0f;
                    
                     blockrotator ( 0.0f, glm::vec3 ( 1,0,0 ) );
@@ -1412,7 +1430,7 @@ void draw (GLFWwindow* window, float x, float y, float w, float h)
                }
             else if (bstatus=="lateraldown")
                      {
-                    Blockobj.x = 0.0f;
+                    Blockobj.x = 0.3f;
                   Blockobj.y = 1.0f;
                    
                     blockrotator ( 0.0f, glm::vec3 ( 0,0,1 ) );
@@ -1430,7 +1448,7 @@ void draw (GLFWwindow* window, float x, float y, float w, float h)
         drawtiles(6,15,"level3");
         
         //BRIDGE LEVELS
-        if(fabs(Blockobj.x-0.6)<0.1  && fabs(Blockobj.z-0.6)<0.1 )
+        if(Blockobj.i==2  && Blockobj.j==2 )
              {
                    level3[4][4]=1;
                       level3[4][5]=1;
@@ -1438,18 +1456,18 @@ void draw (GLFWwindow* window, float x, float y, float w, float h)
 
 
 
-        if(fabs(Blockobj.x-2.4)<0.1  && fabs(Blockobj.z-0.3)<0.1 )
+        if(Blockobj.j==8  && Blockobj.i==1 )
              {
                     level3[4][10]=1;
                     level3[4][11]=1;
              }
         
         
-         if(level3[(int)(Blockobj.z/0.3f)][(int)(Blockobj.x/0.3f)] ==0 || (Blockobj.x <0 ||  Blockobj.z < 0 || Blockobj.x >=10 || Blockobj.z >= 10))
+         if(level3[Blockobj.i][Blockobj.j] ==0 || (Blockobj.i <0 ||  Blockobj.j < 0 || Blockobj.j >=15 || Blockobj.i >= 15))
                     Blockobj.y -=0.1f;  
 
         //Fragile tiles
-        if(bstatus=="up" && fabs(Blockobj.x-2.4)<0.1f && fabs(Blockobj.z-1.2)<0.1f )
+        if(bstatus=="up" && Blockobj.j==3 && Blockobj.i==2)
                     {
                         Blockobj.y -=0.1f;
                         /*cout << " HI I AM " << (int)(Blockobj.z/0.3f) << endl;
@@ -1458,7 +1476,7 @@ void draw (GLFWwindow* window, float x, float y, float w, float h)
 
                     }
       //Frgaile tiles
-        if(bstatus=="up" && fabs(Blockobj.x-3.6)<0.1f && fabs(Blockobj.z-0.9)<0.1f )
+        if(bstatus=="up" && Blockobj.j==12 && Blockobj.i==3 )
                     {
                         Blockobj.y -=0.1f;
                         /*cout << " HI I AM " << (int)(Blockobj.z/0.3f) << endl;
@@ -1472,9 +1490,14 @@ void draw (GLFWwindow* window, float x, float y, float w, float h)
                             Blockobj.x=0.3f;
                             Blockobj.y=1.0f;
                             Blockobj.z=0.3f;
+
+                            lives--;
+
+                            Blockobj.i=1;
+                            Blockobj.j=1;
              if (bstatus=="horizdown")
                {
-                  Blockobj.z -= Blockobj.length;
+                  Blockobj.z = 0.3f;
                   Blockobj.y = 1.0f;
                    
                     blockrotator ( 0.0f, glm::vec3 ( 1,0,0 ) );
@@ -1485,7 +1508,7 @@ void draw (GLFWwindow* window, float x, float y, float w, float h)
                }
             else if (bstatus=="lateraldown")
                      {
-                    Blockobj.x = 0.0f;
+                    Blockobj.x = 0.3f;
                   Blockobj.y = 1.0f;
                    
                     blockrotator ( 0.0f, glm::vec3 ( 0,0,1 ) );
@@ -1493,14 +1516,14 @@ void draw (GLFWwindow* window, float x, float y, float w, float h)
                     bstatus="up";
                     
                      }
-             }  
+             }
 
     if( fabs(Blockobj.x-3.9f)<0.1f && fabs(Blockobj.z-0.3f)<0.1f && bstatus=="up")
         {
         cout << "Congrats you win!"<<endl;
-        glfwDestroyWindow(window);
-    glfwTerminate();
-    exit(EXIT_SUCCESS);
+          glfwDestroyWindow(window);
+          glfwTerminate();
+          exit(EXIT_SUCCESS);
      }
     }
 
@@ -1682,13 +1705,18 @@ t1 = glfwGetTime();
 
     }
 
-    if(level=="level1" && fabs(Blockobj.x-2.1)<0.1 && fabs(Blockobj.y-1)<0.1  && fabs(Blockobj.z-1.2)<0.1 &&bstatus=="up" )
-            {   
+    if(level=="level1" && level1[Blockobj.i][Blockobj.j]==4  && bstatus=="up" )
+            {   level="level2";
+                Blockobj.i=1;
+                Blockobj.j=1;
+                Blockobj.x=0.3f;
+                Blockobj.y=1.0f;
+                Blockobj.z=0.3f;
                 count=0;
                 cout << "SWITCHED LEVEL to LEVEL 2!";
-                if(level2[2][3]==3)
+                //if(level2[2][3]==3)
                  createBox(0.3f, 0.3f, -0.1f, 238.0/256.0, 47.0/256.0, 127.0/256.0, 0.9f, 1.0f, 0.6f, 2, 3);
-                 if(level2[4][8]==3)
+                 //if(level2[4][8]==3)
                  createBox(0.3f, 0.3f, -0.1f, 238.0/256.0, 47.0/256.0, 127.0/256.0, 2.4f, 1.0f, 1.2f, 4, 8);
 
                 Blockobj.x =0.3f;
@@ -1698,17 +1726,19 @@ t1 = glfwGetTime();
                  createBox(0.3f, 0.3f, -0.1f, 100.0/256.0, 117.0/256.0, 167.0/256.0, 0.9f, 1.0f, 0.6f, 2, 3);
                  createBox(0.3f, 0.3f, -0.1f, 100.0/256.0, 117.0/256.0, 167.0/256.0, 3.6f, 1.0f, 0.9f, 3, 12);
 
-                level="level2";
+                
 
                 cout << "level2";
                 flag=2;
                
             }
-    if( level=="level2" && fabs(Blockobj.x-3.9)<0.1  && fabs(Blockobj.z-0.9)<0.1 && bstatus=="up" )
+    if( level=="level2" && level2[Blockobj.i][Blockobj.j]==4 && bstatus=="up" )
     {
                         cout << "SWITCHED LEVEL to LEVEL 3!";
 
         count=0;
+        Blockobj.i=4;
+       Blockobj.j=1;
         Blockobj.x = 0.3f;
         Blockobj.y=1.0f;
         Blockobj.z=1.2f;
@@ -1717,6 +1747,18 @@ t1 = glfwGetTime();
         createBox(0.3f, 0.3f, -0.1f, 200.0/256.0, 147.0/256.0, 27.0/256.0, 2.4f, 1.0f, 0.3f, 1, 8);
         createBox(0.3f, 0.3f, -0.1f, 200.0/256.0, 147.0/256.0, 27.0/256.0, 0.6f, 1.0f, 0.6f, 2,2);
 
+
+    }
+
+    if(lives<=0)
+    {
+        cout << "SORRY YOU LOSE!"<<endl;
+       cout << "YOUR FINAL NO. OF MOVES FOR THIS LEVEL: " << count << endl;
+
+
+          glfwDestroyWindow(window);
+          glfwTerminate();
+          exit(EXIT_SUCCESS);
 
     }
 
@@ -1732,7 +1774,13 @@ t1 = glfwGetTime();
         glfwPollEvents();
 
         //Print the no. of MOVES
-//        cout << "NO. OF MOVES: " << count << " AND LEVEL IS : " << flag << endl;
+        cout << "__________________________" << endl;
+        cout << "NO. OF MOVES: " << count << endl;
+        cout << " LEVEL IS : " << flag << endl;
+        cout << "LIVES LEFT : " <<lives <<endl;
+        cout << "__________________________" << endl;
+
+
 
         // Control based on time (Time based transformation like 5 degrees rotation every 0.5s)
         current_time = glfwGetTime(); // Time in seconds
