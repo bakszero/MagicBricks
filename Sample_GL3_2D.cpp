@@ -89,6 +89,7 @@ typedef struct Base {
 	GLint status;
 	GLfloat height,width, length;
 	GLfloat x_speed,y_speed;
+    GLint  i, j;
 	GLfloat angle; //Current Angle (Actual rotated angle of the object)
 	GLint inAir;
 	GLfloat radius;
@@ -106,6 +107,11 @@ typedef struct Base {
     glm::mat4 translate_matrix;
     glm::mat4 rotate_matrix;
 }Base;
+
+//Previous handler
+string previous;
+//ACTIVATED PART OF Block
+string activated="n";
 
 //AUDIO INITIALISATION
 mpg123_handle *mh;
@@ -527,8 +533,14 @@ void keyboard (GLFWwindow* window, int key, int scancode, int action, int mods)
                 count++;
                 if(bstatus == "up")
                 {
-                    Blockobj.z += Blockobj.length;
+                    Blockobj.z += 0.3f;
                     Blockobj.y =1.3f;
+
+                    Blockobj.i+=2;
+                    previous="left";
+                    activated="l";
+
+                    
                    /* */
                     float rots=0.0f;
                     while(rots<=90.0f)
@@ -540,38 +552,71 @@ void keyboard (GLFWwindow* window, int key, int scancode, int action, int mods)
                             renderblock();
                         }
                           
-                   /* cout << "X is "<< Blockobj.x<< endl;
+                    cout << "X is "<< Blockobj.x<< endl;
                     cout << "Y is "<< Blockobj.y<< endl;
-                    cout <<"Z is "<< Blockobj.z << endl;*/
+                    cout <<"Z is "<< Blockobj.z << endl;
+                    cout << "COORDS ARE : " << "[" << Blockobj.i << "][" << Blockobj.j << "]" << endl;
                    
                     bstatus="horizdown";
                 }
                else if (bstatus=="horizdown")
                {
-                   Blockobj.z += 2*Blockobj.length;
+                   Blockobj.z += 2*0.3f;
                   Blockobj.y = 1.0f;
-                   
+
+                  //Assign i and j values depending on previous key pressed
+                  if(activated=="l")
+                  {
+                  Blockobj.i+=1;
+
+                  }
+                  else if(activated=="r")
+                  {
+                      Blockobj.i+=2;
+                  }
+                      
+                previous="left";
+                activated="n";
+
                     blockrotator ( 0.0f, glm::vec3 ( 1,0,0 ) );
 
                     renderblock();
                      
                     bstatus="up";
-                    /*cout << "X is "<< Blockobj.x<< endl;
+                    cout << "X is "<< Blockobj.x<< endl;
                     cout << "Y is "<< Blockobj.y<< endl;
-                    cout <<"Z is "<< Blockobj.z << endl;*/
+                    cout <<"Z is "<< Blockobj.z << endl;
+                    cout << "COORDS ARE : " << "[" << Blockobj.i << "][" << Blockobj.j << "]" << endl;
                 }
           
           else if (bstatus=="lateraldown")
             {
-                Blockobj.z += Blockobj.width;
+                Blockobj.z += 0.3f;
                   Blockobj.y = 1.3f;
+                
+                  if(activated=="u")
+                  {
+                  Blockobj.i+=1;
+                  activated="u";
+
+                  }
+                  else if(activated=="d")
+                  {
+                      Blockobj.i+=1;
+                      activated="d";
+                  }
+                             
+                previous="left";
+                
+
                    
                     //blockrotator ( 0.0f, glm::vec3 ( 0,0,-1 ) );
 
                     renderblock();
-                   /* cout << "X is "<< Blockobj.x<< endl;
+                    cout << "X is "<< Blockobj.x<< endl;
                     cout << "Y is "<< Blockobj.y<< endl;
-                    cout <<"Z is "<< Blockobj.z << endl;*/
+                    cout <<"Z is "<< Blockobj.z << endl;
+                    cout << "COORDS ARE : " << "[" << Blockobj.i << "][" << Blockobj.j << "]" << endl;
              }
                 break;
 
@@ -579,47 +624,83 @@ void keyboard (GLFWwindow* window, int key, int scancode, int action, int mods)
             count++;
             if(bstatus=="up")
             {
-                Blockobj.z -= 2*Blockobj.length;
+                Blockobj.z -= 2*0.3f;
                 Blockobj.y =1.3f;
                 float rots=0.0f;
+
+                Blockobj.i-=1;
+                activated="r";
+
+                  
+                previous="right";
                     
                             blockrotator(90.0f, glm::vec3(1, 0, 0));
                           
                            
                 //blockrotator(90.0f, glm::vec3(1, 0, 0));
                 
-                /*cout << "X is "<< Blockobj.x<< endl;
+                cout << "X is "<< Blockobj.x<< endl;
                     cout << "Y is "<< Blockobj.y<< endl;
-                    cout <<"Z is "<< Blockobj.z << endl;*/
+                    cout <<"Z is "<< Blockobj.z << endl;
+                    cout << "COORDS ARE : " << "[" << Blockobj.i << "][" << Blockobj.j << "]" << endl;
                 bstatus="horizdown";
                    
                 
             }
             else if (bstatus=="horizdown")
                {
-                  Blockobj.z -= Blockobj.length;
+                  Blockobj.z -= 0.3f;
                   Blockobj.y = 1.0f;
+                  
+                  if(activated=="l")
+                  {
+                  Blockobj.i-=2;
+                  activated="n";
+
+                  }
+                  else if(activated=="r")
+                  {
+                      Blockobj.i-=1;
+                      activated="n";
+                  }
+                     
+                previous="right";
+
                    
                     blockrotator ( 0.0f, glm::vec3 ( 1,0,0 ) );
 
                     renderblock();
-                     /*cout << "X is "<< Blockobj.x<< endl;
+                     cout << "X is "<< Blockobj.x<< endl;
                     cout << "Y is "<< Blockobj.y<< endl;
-                    cout <<"Z is "<< Blockobj.z << endl;*/
+                    cout <<"Z is "<< Blockobj.z << endl;
+                    cout << "COORDS ARE : " << "[" << Blockobj.i << "][" << Blockobj.j << "]" << endl;
                     bstatus="up";
                     
                 }
             else if (bstatus=="lateraldown")
             {
-                Blockobj.z -= Blockobj.width;
+                Blockobj.z -= 0.3f;
                   Blockobj.y = 1.3f;
-                   
+
+                  if(activated=="u")
+                  {
+                  Blockobj.i-=1;
+                  activated="u";
+
+                  }
+                  else if(activated=="d")
+                  {
+                      Blockobj.i-=1;
+                      activated="d";
+                  }
+                   previous="right";
                     //blockrotator ( 0.0f, glm::vec3 ( 0,0,-1 ) );
 
                     renderblock();
-                   /* cout << "X is "<< Blockobj.x<< endl;
+                    cout << "X is "<< Blockobj.x<< endl;
                     cout << "Y is "<< Blockobj.y<< endl;
-                    cout <<"Z is "<< Blockobj.z << endl;*/
+                    cout <<"Z is "<< Blockobj.z << endl;
+                    cout << "COORDS ARE : " << "[" << Blockobj.i << "][" << Blockobj.j << "]" << endl;
              }
              break;
 
@@ -627,40 +708,78 @@ void keyboard (GLFWwindow* window, int key, int scancode, int action, int mods)
             count++;
             if(bstatus=="up")
             {
-                Blockobj.x -= 2*Blockobj.width;
+                Blockobj.x -= 2*0.3f;
                 Blockobj.y =1.3f;
+
+                Blockobj.j-=2;
+                previous="up";
+                activated="u";
+
+
                 blockrotator(90.0f, glm::vec3(0, 0, -1));
                 renderblock();
                      
                     bstatus="lateraldown";
-                   /* cout << "X is "<< Blockobj.x<< endl;
+                    cout << "X is "<< Blockobj.x<< endl;
                     cout << "Y is "<< Blockobj.y<< endl;
-                    cout <<"Z is "<< Blockobj.z << endl;*/
+                    cout <<"Z is "<< Blockobj.z << endl;
+                    cout << "COORDS ARE : " << "[" << Blockobj.i << "][" << Blockobj.j << "]" << endl;
             }              
             else if (bstatus=="lateraldown")
             {
-                Blockobj.x -= Blockobj.width;
+                Blockobj.x -= 0.3f;
                   Blockobj.y = 1.0f;
                    
+
+                   if(activated=="u")
+                   {
+                       Blockobj.j-=1;
+                       activated="n";
+                   }
+                   else if (activated=="d")
+                   {
+                       Blockobj.j-=2;
+                       activated="n";
+                   }
+                   previous="up";
+
+
+
+
                     blockrotator ( 0.0f, glm::vec3 ( 0,0,-1 ) );
 
                     renderblock();
                     bstatus="up";
-                   /* cout << "X is "<< Blockobj.x<< endl;
+                   cout << "X is "<< Blockobj.x<< endl;
                     cout << "Y is "<< Blockobj.y<< endl;
-                    cout <<"Z is "<< Blockobj.z << endl;*/
+                    cout <<"Z is "<< Blockobj.z << endl;
+                    cout << "COORDS ARE : " << "[" << Blockobj.i << "][" << Blockobj.j << "]" << endl;
 
             }
              else if(bstatus=="horizdown") 
             {
-                  Blockobj.x -= Blockobj.width;
+                  Blockobj.x -= 0.3f;
                   Blockobj.y = 1.3f;
                   bstatus="horizdown";
+
+                  if(activated=="l")
+                  {
+                      Blockobj.j-=1;
+                      activated="l";
+                  }
+                  else if (activated=="r")
+                  {
+                      Blockobj.j-=1;
+                      activated="r";
+                  }
+
+                  previous="up";
                     //blockrotator ( 180.0f, glm::vec3 ( 0,0,-1 ) );
                   renderblock();
-                  /*cout << "X is "<< Blockobj.x<< endl;
+                  cout << "X is "<< Blockobj.x<< endl;
                     cout << "Y is "<< Blockobj.y<< endl;
-                    cout <<"Z is "<< Blockobj.z << endl;*/
+                    cout <<"Z is "<< Blockobj.z << endl;
+                    cout << "COORDS ARE : " << "[" << Blockobj.i << "][" << Blockobj.j << "]" << endl;
                      
             }
             break;
@@ -669,38 +788,72 @@ void keyboard (GLFWwindow* window, int key, int scancode, int action, int mods)
             count++;
             if(bstatus=="up")
             {
-                Blockobj.x += Blockobj.width;
+                Blockobj.x += 0.3f;
                 Blockobj.y =1.3f;
+
+                Blockobj.j+=2;
+                previous="down";
+                activated="d";
+
                 blockrotator(-90.0f, glm::vec3(0, 0, 1));
                 renderblock();
                      
                     bstatus="lateraldown";
-                     /* cout << "X is "<< Blockobj.x<< endl;
+                      cout << "X is "<< Blockobj.x<< endl;
                     cout << "Y is "<< Blockobj.y<< endl;
-                    cout <<"Z is "<< Blockobj.z << endl;*/
+                    cout <<"Z is "<< Blockobj.z << endl;
+                    cout << "COORDS ARE : " << "[" << Blockobj.i << "][" << Blockobj.j << "]" << endl;
             }              
             else if (bstatus=="lateraldown")
             {
-                Blockobj.x += 2*Blockobj.width;
+                Blockobj.x += 2*0.3f;
                   Blockobj.y = 1.0f;
+
+                  if(activated=="u"){
+                      Blockobj.j+=2;
+                      activated="n";
+                  }
+                  else if (activated=="d")
+                  {
+                      Blockobj.j+=1;
+                      activated="n";
+                  }
+                  previous="down";
+
                    
                     blockrotator ( 0.0f, glm::vec3 ( 0,0,1 ) );
                     renderblock();
                     bstatus="up";
 
-                     /* cout << "haha X is "<< Blockobj.x<< endl;
+                     cout << "haha X is "<< Blockobj.x<< endl;
                     cout << "Y is "<< Blockobj.y<< endl;
-                    cout <<"Z is "<< Blockobj.z << endl;*/
+                    cout <<"Z is "<< Blockobj.z << endl;
+                    cout << "COORDS ARE : " << "[" << Blockobj.i << "][" << Blockobj.j << "]" << endl;
             }
             else if(bstatus=="horizdown")
             {
-                  Blockobj.x += Blockobj.width;
+                  Blockobj.x += 0.3f;
                   Blockobj.y = 1.3f;
+
+                  if(activated=="r")
+                  {
+                      Blockobj.j+=1;
+                      activated="r";
+                  }
+
+                  else if(activated=="l")
+                  {
+                      Blockobj.j+=1;
+                      activated="l";
+                  }
+
+                  previous="down";
                    // blockrotator ( 0.0f, glm::vec3 ( 1,0,0 ) );
                   renderblock();
-                /*  cout << "X is "<< Blockobj.x<< endl;
+                 cout << "X is "<< Blockobj.x<< endl;
                     cout << "Y is "<< Blockobj.y<< endl;
-                    cout <<"Z is "<< Blockobj.z << endl;*/
+                    cout <<"Z is "<< Blockobj.z << endl;
+                cout << "COORDS ARE : " << "[" << Blockobj.i << "][" << Blockobj.j << "]" << endl;
                      
             }
             break;
@@ -886,7 +1039,7 @@ void createBox(float l, float b, float h, float r, float g, float bl, float x, f
     tiles[i][j]=tempobj;
 }
 
-void createBlock(float l, float b, float h, float r, float g, float bl, float x, float y , float z)
+void createBlock(float l, float b, float h, float r, float g, float bl, float x, float y , float z, int i, int j)
 {
     GLfloat vertex_buffer_data[ ] = {
         0, 0, 0, b, 0, 0, b, h, 0, b, h, 0, 0, h, 0, 0, 0 , 0,        //1
@@ -945,6 +1098,8 @@ void createBlock(float l, float b, float h, float r, float g, float bl, float x,
 	tempobj.x=x;
 	tempobj.y=y;
     tempobj.z=z;
+    tempobj.i=i;
+    tempobj.j=j;
 	tempobj.height=h;
 	tempobj.width=b;
     tempobj.length=0.3f;
@@ -1182,9 +1337,9 @@ void draw (GLFWwindow* window, float x, float y, float w, float h)
             if(Blockobj.y <= -25.0f )
                         {
 
-                            Blockobj.x=0.0f;
+                            Blockobj.x=0.3f;
                             Blockobj.y=1.0f;
-                            Blockobj.z=0.0f;
+                            Blockobj.z=0.3f;
              if (bstatus=="horizdown")
                {
                   Blockobj.z -= Blockobj.length;
@@ -1218,7 +1373,7 @@ void draw (GLFWwindow* window, float x, float y, float w, float h)
         drawtiles(6,15, "level2");
                                 //cout << "status is " << bstatus << endl;
 
-         if( level2[(int)(Blockobj.z/0.3f)][(int)(Blockobj.x/0.3f)] ==0 || (Blockobj.x <0 ||  Blockobj.z < 0 || Blockobj.x >=10 || Blockobj.z >= 10))
+         if( ( (level2[(int)(Blockobj.z/0.3f)][(int)(Blockobj.x/0.3f)] ==0)) || (Blockobj.x <0 ||  Blockobj.z < 0 || Blockobj.x >=10 || Blockobj.z >= 10))
                      Blockobj.y -=0.1f;
          
           /*if(bstatus=="up" && level2[(int)((Blockobj.z/0.3f))][(int)(((Blockobj.x/0.3f)))] == 3   )
@@ -1463,7 +1618,7 @@ void initGL (GLFWwindow* window, int width, int height)
     x_ordinate = 0.3f;
     y_ordinate = 1.0f ;
     z_ordinate = 0.3f;
-    createBlock(0.3f, 0.3f, 0.6f, 0.47, 0.3,0.56,x_ordinate, y_ordinate, z_ordinate);
+    createBlock(0.3f, 0.3f, 0.6f, 0.47, 0.3,0.56,x_ordinate, y_ordinate, z_ordinate, 1 , 1);
     
 
     // Create and compile our GLSL program from the shaders
@@ -1577,7 +1732,7 @@ t1 = glfwGetTime();
         glfwPollEvents();
 
         //Print the no. of MOVES
-        cout << "NO. OF MOVES: " << count << " AND LEVEL IS : " << flag << endl;
+//        cout << "NO. OF MOVES: " << count << " AND LEVEL IS : " << flag << endl;
 
         // Control based on time (Time based transformation like 5 degrees rotation every 0.5s)
         current_time = glfwGetTime(); // Time in seconds
